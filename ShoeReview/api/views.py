@@ -1,7 +1,11 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from .Models import Shoe
+from .serializers import ShoeSerializer
 
-
-def main(request):
-    return HttpResponse("Hello")
-    
+class ShoeListView(APIView):
+    def get(self, request):
+        shoes = Shoe.objects.all()
+        serializer = ShoeSerializer(shoes, many=True)
+        return Response(serializer.data)

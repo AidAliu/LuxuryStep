@@ -1,7 +1,6 @@
 from django.urls import path
-from .views import main
+from .views import ShoeListView
 
 urlpatterns = [
-    path('', main)
+    path('shoes/', ShoeListView.as_view(), name='shoe-list'),  # Example route
 ]
-
