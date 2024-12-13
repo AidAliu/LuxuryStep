@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { createShoe } from "../api";
+import { createShoe } from "../utils/api";
 
 const ShoeForm = () => {
     const [formData, setFormData] = useState({

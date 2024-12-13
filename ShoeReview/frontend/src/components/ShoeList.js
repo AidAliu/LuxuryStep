@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getShoes } from "../api";
+import { getShoes } from "../utils/api";
 
 const ShoeList = () => {
     const [shoes, setShoes] = useState([]);
