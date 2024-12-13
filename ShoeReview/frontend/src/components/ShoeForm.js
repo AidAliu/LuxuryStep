@@ -38,6 +38,48 @@ const ShoeForm = () => {
                 placeholder="Price"
                 onChange={handleChange}
             />
+            <input
+                type="number"
+                name="Brand"
+                placeholder="Brand"
+                onChange={handleChange}
+            />
+            <input
+                type="number"
+                name="Category"
+                placeholder="Category"
+                onChange={handleChange}
+            />
+            <input
+                type="number"
+                name="Style"
+                placeholder="Style"
+                onChange={handleChange}
+            />
+            <input
+                type="number"
+                name="Size"
+                placeholder="Size"
+                onChange={handleChange}
+            />
+            <input
+                type="number"
+                name="Stock"
+                placeholder="Stock"
+                onChange={handleChange}
+            />
+            <input
+                type="text"
+                name="Description"
+                placeholder="Description"
+                onChange={handleChange}
+            />
+            <input
+                type="text"
+                name="ImageURL"
+                placeholder="ImageURL"
+                onChange={handleChange}
+            />
             <button type="submit">Add Shoe</button>
         </form>
     );
