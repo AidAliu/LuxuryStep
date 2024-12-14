@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { getShoes } from "../utils/api";
 
 const ShoeList = () => {
@@ -6,19 +6,24 @@ const ShoeList = () => {
 
     useEffect(() => {
         const fetchShoes = async () => {
-            const data = await getShoes();
-            setShoes(data);
+            try {
+                const data = await getShoes();
+                setShoes(data);
+            } catch (error) {
+                console.error("Error fetching shoes:", error);
+            }
         };
+
         fetchShoes();
     }, []);
 
     return (
         <div>
-            <h1>Shoe List</h1>
+            <h2>Shoe List</h2>
             <ul>
                 {shoes.map((shoe) => (
                     <li key={shoe.id}>
-                        {shoe.Name} - ${shoe.Price}
+                        <strong>{shoe.name}</strong> - ${shoe.price}
                     </li>
                 ))}
             </ul>

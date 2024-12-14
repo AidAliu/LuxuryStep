@@ -1,14 +1,20 @@
 import React from "react";
-import ShoeList from "./components/ShoeList";
-import ShoeForm from "./components/ShoeForm";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Admin from "./pages/Admin";
+import CreateShoe from "./pages/CreateShoe";
+import ShoeDashboard from "./pages/ShoeDashboard";
+import Navbar from "./components/Navbar";
 
 function App() {
     return (
-        <div>
-            <h1>Shoe Review</h1>
-            <ShoeForm />
-            <ShoeList />
-        </div>
+        <Router>
+            <Navbar />
+            <Routes>
+                <Route path="/" element={<ShoeDashboard />} />
+                <Route path="/admin" element={<Admin />} />
+                <Route path="/create-shoe" element={<CreateShoe />} />
+            </Routes>
+        </Router>
     );
 }
 

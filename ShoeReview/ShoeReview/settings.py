@@ -15,12 +15,10 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 SECRET_KEY = 'django-insecure-i4@6*etr9o!)ccfk-5n-c)ond7(=qu)atxncexe5pd&ljz8y^j'
 DEBUG = True
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
-
 
 # Application definition
 INSTALLED_APPS = [
@@ -30,34 +28,33 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',  
-    'api.apps.ApiConfig',  
-    'corsheaders'
-    ]
+    'rest_framework',  # Django REST framework
+    'corsheaders',  # CORS headers for cross-origin requests
+    'api.apps.ApiConfig',  # Your API app
+]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # CORS middleware must be before CommonMiddleware
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',  
 ]
 
+# CORS settings
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',  
-    'http://127.0.0.1:8000',
+    'http://localhost:3000',  # React frontend
 ]
-
 
 ROOT_URLCONF = 'ShoeReview.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],  # If you have a templates folder
+        'DIRS': [BASE_DIR / 'templates'],  # Ensure templates folder exists
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -72,20 +69,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ShoeReview.wsgi.application'
 
-
-# Use SQLite by default for simplicity
+# Database settings
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  
-]
-
-
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -103,21 +93,20 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
+# Internationalization settings
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-
-# Static files
+# Static files settings
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']  # Ensure you have a 'static' folder
+STATICFILES_DIRS = [BASE_DIR / 'static']  # Create a `static` folder if not present
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # For production use
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-
-# Media files
+# Media files settings
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = BASE_DIR / 'media'  # Ensure `media` folder exists
+
+# Default primary key field type
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

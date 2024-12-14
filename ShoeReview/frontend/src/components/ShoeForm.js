@@ -3,84 +3,108 @@ import { createShoe } from "../utils/api";
 
 const ShoeForm = () => {
     const [formData, setFormData] = useState({
-        Name: "",
-        Brand: 1,
-        Style: 1,
-        Category: 1,
-        Price: "",
-        Size: "",
-        Stock: "",
-        Description: "",
-        ImageUrl: "",
+        name: "",
+        brand: "",
+        style: "",
+        category: "",
+        price: "",
+        size: "",
+        stock: "",
+        description: "",
+        image_url: "",
     });
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value,
+        });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        await createShoe(formData);
-        alert("Shoe added successfully!");
+        try {
+            const response = await createShoe(formData);
+            console.log("Shoe created:", response);
+        } catch (error) {
+            console.error("Error creating shoe:", error);
+        }
     };
 
     return (
         <form onSubmit={handleSubmit}>
             <input
                 type="text"
-                name="Name"
+                name="name"
                 placeholder="Name"
+                value={formData.name}
                 onChange={handleChange}
+                required
             />
             <input
                 type="number"
-                name="Price"
+                name="brand"
+                placeholder="Brand ID"
+                value={formData.brand}
+                onChange={handleChange}
+                required
+            />
+            <input
+                type="number"
+                name="style"
+                placeholder="Style ID"
+                value={formData.style}
+                onChange={handleChange}
+                required
+            />
+            <input
+                type="number"
+                name="category"
+                placeholder="Category ID"
+                value={formData.category}
+                onChange={handleChange}
+                required
+            />
+            <input
+                type="number"
+                name="price"
                 placeholder="Price"
+                value={formData.price}
                 onChange={handleChange}
+                required
             />
             <input
                 type="number"
-                name="Brand"
-                placeholder="Brand"
-                onChange={handleChange}
-            />
-            <input
-                type="number"
-                name="Category"
-                placeholder="Category"
-                onChange={handleChange}
-            />
-            <input
-                type="number"
-                name="Style"
-                placeholder="Style"
-                onChange={handleChange}
-            />
-            <input
-                type="number"
-                name="Size"
+                name="size"
                 placeholder="Size"
+                value={formData.size}
                 onChange={handleChange}
+                required
             />
             <input
                 type="number"
-                name="Stock"
+                name="stock"
                 placeholder="Stock"
+                value={formData.stock}
                 onChange={handleChange}
+                required
             />
-            <input
-                type="text"
-                name="Description"
+            <textarea
+                name="description"
                 placeholder="Description"
+                value={formData.description}
                 onChange={handleChange}
-            />
+                required
+            ></textarea>
             <input
                 type="text"
-                name="ImageURL"
-                placeholder="ImageURL"
+                name="image_url"
+                placeholder="Image URL"
+                value={formData.image_url}
                 onChange={handleChange}
+                required
             />
-            <button type="submit">Add Shoe</button>
+            <button type="submit">Submit</button>
         </form>
     );
 };

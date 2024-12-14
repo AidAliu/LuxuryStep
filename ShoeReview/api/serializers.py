@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .Models import (
+from .models import (
     User, 
     Shoe, 
     Brand, 
