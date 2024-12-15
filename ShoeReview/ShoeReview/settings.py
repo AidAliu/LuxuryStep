@@ -93,6 +93,16 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+import environ
+
+# Initialize environment variables
+env = environ.Env()
+environ.Env.read_env()  # Reading .env file
+
+# Use the SECRET_KEY from environment variables
+SECRET_KEY = env('DJANGO_SECRET_KEY')
+
+
 # Internationalization settings
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
