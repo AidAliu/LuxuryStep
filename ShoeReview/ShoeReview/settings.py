@@ -28,9 +28,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',  # Django REST framework
-    'corsheaders',  # CORS headers for cross-origin requests
-    'api.apps.ApiConfig',  # Your API app
+    'rest_framework',  
+    'rest_framework_simplejwt',
+    'corsheaders',  
+    'api.apps.ApiConfig',  
 ]
 
 MIDDLEWARE = [
@@ -68,6 +69,16 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'ShoeReview.wsgi.application'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
+
 
 # Database settings
 DATABASES = {
