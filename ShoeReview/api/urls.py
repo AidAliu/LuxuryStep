@@ -3,7 +3,6 @@ from .views.user_view import UserListView
 from .views.shoe_view import ShoeListView, ShoeDetailView
 from .views.brand_view import BrandListCreateView, BrandDetailView
 from .views.category_view import CategoryListCreateView, CategoryDetailView
-from .views.shoe_filter_views import ShoesByBrandView, ShoesByCategoryView, ShoesByStyleView
 from .views.wishlist_view import WishlistListCreateView, WishlistDetailView
 from .views.wishlistitem_view import WishlistItemListCreateView, WishlistItemDetailView
 from .views.order_view import OrderListCreateView, OrderDetailView
@@ -50,9 +49,4 @@ urlpatterns = [
     # CRUD for Styles
     path('styles/', StyleListCreateView.as_view(), name='style-list-create'),
     path('styles/<int:pk>/', StyleDetailView.as_view(), name='style-detail'),
-
-    # Filter Shoes
-    path('shoes/brand/<int:brand_id>/', ShoesByBrandView.as_view(), name='shoes-by-brand'),
-    path('shoes/category/<int:category_id>/', ShoesByCategoryView.as_view(), name='shoes-by-category'),
-    path('shoes/style/<int:style_id>/', ShoesByStyleView.as_view(), name='shoes-by-style'),
 ]
