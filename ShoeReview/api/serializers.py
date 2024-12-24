@@ -9,7 +9,8 @@ from .models import (
     Order, 
     OrderItem, 
     Review, 
-    Style
+    Style,
+    Payment
 )
 
 # User Serializer
@@ -81,4 +82,10 @@ class ReviewSerializer(serializers.ModelSerializer):
 class StyleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Style
+        fields = '__all__'
+
+# PaymentSerializer
+class PaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
         fields = '__all__'

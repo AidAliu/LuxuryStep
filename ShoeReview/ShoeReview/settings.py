@@ -31,7 +31,8 @@ INSTALLED_APPS = [
     'rest_framework',  
     'rest_framework_simplejwt',
     'corsheaders',  
-    'api.apps.ApiConfig',  
+    'api.apps.ApiConfig', 
+    'controlpanel' 
 ]
 
 MIDDLEWARE = [
@@ -122,7 +123,6 @@ USE_TZ = True
 
 # Static files settings
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']  # Create a `static` folder if not present
 STATIC_ROOT = BASE_DIR / 'staticfiles'  # For production use
 
 # Media files settings
