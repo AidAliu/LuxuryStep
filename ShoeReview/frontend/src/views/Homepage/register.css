@@ -1,10 +1,15 @@
 .register-section {
     padding: 20px;
     background-color: #f9f9f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
 }
 
 .wrapper {
-    max-width: 600px;
+    max-width: 800px; /* Increase max-width for wider form */
+    width: 35%;
     margin: 0 auto;
     text-align: center;
 }

@@ -1,10 +1,10 @@
 import React from "react";
-import AppRouter from "./router/Router"; // Import the router component
+import Router from "./router/Router";
 
 const App = () => {
   return (
     <div>
-      <AppRouter /> {/* Render the router */}
+      <Router />
     </div>
   );
 };
