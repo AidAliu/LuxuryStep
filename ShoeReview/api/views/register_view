@@ -1,0 +1,65 @@
+from django.contrib.auth.models import User
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from django.db import IntegrityError
+
+class RegisterView(APIView):
+    def post(self, request, *args, **kwargs):
+        username = request.data.get('username')
+        email = request.data.get('email')
+        password = request.data.get('password')
+        first_name = request.data.get('firstName')
+        last_name = request.data.get('lastName')
+
+        if not all([username, email, password, first_name, last_name]):
+            return Response(
+                {"error": "All fields are required: username, email, password, firstName, lastName."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            if User.objects.filter(username=username).exists():
+                return Response(
+                    {"error": "Username already exists."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            if User.objects.filter(email=email).exists():
+                return Response(
+                    {"error": "Email already exists."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                first_name=first_name,
+                last_name=last_name
+            )
+
+            return Response(
+                {
+                    "message": "User registered successfully.",
+                    "user": {
+                        "id": user.id,
+                        "username": user.username,
+                        "email": user.email,
+                        "first_name": user.first_name,
+                        "last_name": user.last_name
+                    }
+                },
+                status=status.HTTP_201_CREATED
+            )
+
+        except IntegrityError as e:
+            return Response(
+                {"error": "A database error occurred while creating the user.", "details": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+        except Exception as e:
+            return Response(
+                {"error": "An unexpected error occurred.", "details": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

@@ -1,26 +1,78 @@
+# file: api/views/user_view.py
+
+from django.contrib.auth.models import User
+from django.db import IntegrityError
+from django.core.exceptions import PermissionDenied
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
-from ..models import User
 from ..serializers import UserSerializer
-from django.core.exceptions import PermissionDenied
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
 
+class RegisterView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        username = request.data.get('username')
+        email = request.data.get('email')
+        password = request.data.get('password')
+        first_name = request.data.get('firstName')
+        last_name = request.data.get('lastName')
+
+        if not all([username, email, password, first_name, last_name]):
+            return Response(
+                {"error": "All fields are required: username, email, password, firstName, lastName."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            if User.objects.filter(username=username).exists():
+                return Response({"error": "Username already exists."}, status=status.HTTP_400_BAD_REQUEST)
+            if User.objects.filter(email=email).exists():
+                return Response({"error": "Email already exists."}, status=status.HTTP_400_BAD_REQUEST)
+
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                first_name=first_name,
+                last_name=last_name
+            )
+            return Response(
+                {
+                    "message": "User registered successfully.",
+                    "user": {
+                        "id": user.id,
+                        "username": user.username,
+                        "email": user.email,
+                        "first_name": user.first_name,
+                        "last_name": user.last_name
+                    }
+                },
+                status=status.HTTP_201_CREATED
+            )
+        except IntegrityError as e:
+            return Response(
+                {"error": "Database error while creating the user.", "details": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        except Exception as e:
+            return Response(
+                {"error": "Unexpected error.", "details": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_control_panel_data(request):
-    if not request.user.is_admin:
-        return Response({"error": "Unauthorized access."}, status=403)
+    if not request.user.is_staff:
+        return Response({"error": "Unauthorized."}, status=403)
 
-    # Mock control panel data - Replace with actual queries
     data = {
         "total_users": User.objects.count(),
-        "total_orders": 45,  # Replace with actual query
-        "total_payments": 67,  # Replace with actual query
+        "total_orders": 45,
+        "total_payments": 67,
         "recent_payments": [
             {"id": 1, "amount": 200, "paymentMethod": "Credit Card"},
             {"id": 2, "amount": 150, "paymentMethod": "PayPal"}
@@ -28,28 +80,30 @@ def get_control_panel_data(request):
     }
     return Response(data)
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_current_user(request):
+    user = request.user
+    data = {
+        "username": user.username,
+        "email": user.email,
+        "is_staff": user.is_staff,
+    }
+    return Response(data)
+
 class UserListView(APIView):
-    """
-    View to handle listing and creating users.
-    - GET: Retrieve all users (restricted to admins).
-    - POST: Create a new user.
-    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        # Restrict access to admins only
-        if not request.user.is_admin:
-            raise PermissionDenied("Only admins can view the user list.")
-        
+        if not request.user.is_staff:
+            raise PermissionDenied("Only staff can view users.")
         users = User.objects.all()
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data)
 
     def post(self, request):
-        # Allow admins to create users
-        if not request.user.is_admin:
-            raise PermissionDenied("Only admins can create users.")
-        
+        if not request.user.is_staff:
+            raise PermissionDenied("Only staff can create users.")
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -57,50 +111,37 @@ class UserListView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UserDetailView(APIView):
-    """
-    View to handle retrieving, updating, and deleting a single user.
-    - GET: Retrieve details of a specific user.
-    - PUT: Update user details.
-    - DELETE: Delete a user.
-    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request, pk):
-        # Restrict access to admins or the user themselves
         try:
             user = User.objects.get(pk=pk)
-            if not (request.user.is_admin or request.user == user):
-                raise PermissionDenied("You are not authorized to view this user's details.")
-            
+            if not (request.user.is_staff or request.user == user):
+                raise PermissionDenied("Not authorized.")
             serializer = UserSerializer(user)
             return Response(serializer.data)
         except User.DoesNotExist:
-            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, pk):
-        # Restrict access to admins or the user themselves
         try:
             user = User.objects.get(pk=pk)
-            if not (request.user.is_admin or request.user == user):
-                raise PermissionDenied("You are not authorized to update this user's details.")
-            
-            serializer = UserSerializer(user, data=request.data, partial=True)  # Allows partial updates
+            if not (request.user.is_staff or request.user == user):
+                raise PermissionDenied("Not authorized.")
+            serializer = UserSerializer(user, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except User.DoesNotExist:
-            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
     def delete(self, request, pk):
-        # Restrict access to admins only
         try:
             user = User.objects.get(pk=pk)
-            if not request.user.is_admin:
-                raise PermissionDenied("Only admins can delete users.")
-            
+            if not request.user.is_staff:
+                raise PermissionDenied("Only staff can delete users.")
             user.delete()
-            return Response({'message': 'User deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+            return Response({"message": "User deleted."}, status=status.HTTP_204_NO_CONTENT)
         except User.DoesNotExist:
-            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
-        
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)

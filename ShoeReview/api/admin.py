@@ -1,7 +1,6 @@
 from django.contrib import admin
-from .models import User, Shoe, Brand, Style, Category, Wishlist, WishlistItem, Order, OrderItem, Review
+from .models import Shoe, Brand, Style, Category, Wishlist, WishlistItem, Order, OrderItem, Review
 
-admin.site.register(User)
 admin.site.register(Shoe)
 admin.site.register(Brand)
 admin.site.register(Style)

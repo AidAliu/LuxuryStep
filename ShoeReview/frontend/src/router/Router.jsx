@@ -9,23 +9,24 @@ import { PaymentEdit } from "../components/payments/PaymentEdit";
 import { PaymentList } from "../components/payments/PaymentList";
 
 const AppRouter = () => {
-    return (
-        <Router>
-            <Routes>
-                <Route path="/" element={<Homepage />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
+  return (
+    <Router>
+      <Routes>
+        {/* Home, Login, Register */}
+        <Route path="/" element={<Homepage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
-                {/* Payment routes */}
-                <Route path="/payments" element={<PaymentList />} />
-                <Route path="/payments/new" element={<PaymentCreate />} />
-                <Route path="/payments/edit/:id" element={<PaymentEdit />} />
+        {/* Payment Routes */}
+        <Route path="/payments" element={<PaymentList />} />
+        <Route path="/payments/new" element={<PaymentCreate />} />
+        <Route path="/payments/edit/:id" element={<PaymentEdit />} />
 
-                {/* Control Panel */}
-                <Route path="/controlpanel" element={<ControlPanel />} />
-            </Routes>
-        </Router>
-    );
+        {/* Control Panel */}
+        <Route path="/controlpanel" element={<ControlPanel />} />
+      </Routes>
+    </Router>
+  );
 };
 
 export default AppRouter;

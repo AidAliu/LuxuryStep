@@ -1,4 +1,3 @@
-from .User import User
 from .Shoe import Shoe
 from .Brand import Brand
 from .Style import Style
