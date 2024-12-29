@@ -66,19 +66,37 @@ class RegisterView(APIView):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_control_panel_data(request):
-    if not request.user.is_staff:
-        return Response({"error": "Unauthorized."}, status=403)
+    try:
+        if not request.user.is_staff:
+            return Response({"error": "Unauthorized."}, status=403)
 
-    data = {
-        "total_users": User.objects.count(),
-        "total_orders": 45,
-        "total_payments": 67,
-        "recent_payments": [
-            {"id": 1, "amount": 200, "paymentMethod": "Credit Card"},
-            {"id": 2, "amount": 150, "paymentMethod": "PayPal"}
+        total_users = User.objects.count()
+
+        # Example models: replace with actual models used in your project
+        from api.models import Order, Payment
+        total_orders = Order.objects.count()
+        total_payments = Payment.objects.count()
+
+        recent_payments = Payment.objects.order_by('PaymentID')[:5]
+        recent_payments_data = [
+            {"id": payment.PaymentID, "amount": payment.amount, "paymentMethod": payment.payment_method}
+            for payment in recent_payments
         ]
-    }
-    return Response(data)
+
+        data = {
+            "total_users": total_users,
+            "total_orders": total_orders,
+            "total_payments": total_payments,
+            "recent_payments": recent_payments_data,
+        }
+        return Response(data)
+
+    except Exception as e:
+        # Log the error
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Error in control panel data: {e}")
+        return Response({"error": "Internal Server Error", "details": str(e)}, status=500)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
