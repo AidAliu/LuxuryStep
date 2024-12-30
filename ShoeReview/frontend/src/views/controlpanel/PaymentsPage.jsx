@@ -42,7 +42,7 @@ const PaymentsPage = () => {
     }
 
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/payments/${PaymentID}`, {
+      await axios.delete(`http://127.0.0.1:8000/api/payments/${PaymentID}/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -100,6 +100,7 @@ const PaymentsPage = () => {
                 <td>
                   <button
                     className="btn btn-warning mx-1"
+                    style={{ marginRight: '5px'}}
                     onClick={() => handleEdit(payment.PaymentID)}
                   >
                     Edit

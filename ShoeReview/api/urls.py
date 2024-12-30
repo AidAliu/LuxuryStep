@@ -1,5 +1,3 @@
-# file: api/urls.py
-
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views.user_view import (
@@ -7,9 +5,9 @@ from .views.user_view import (
     get_control_panel_data,
     get_current_user,
     UserListView,
-    UserDetailView
+    UserDetailView,
 )
-from .views.payment_view import PaymentListCreateView
+from .views.payment_view import PaymentListCreateView, PaymentDetailView
 
 urlpatterns = [
     # Login (JWT)
@@ -28,7 +26,8 @@ urlpatterns = [
     # Example user endpoints (staff only)
     path('users/', UserListView.as_view(), name='user-list'),
     path('users/<int:pk>/', UserDetailView.as_view(), name='user-detail'),
-    
-    # Payments API endpoint (GET for list of payments)
-    path('payments/', PaymentListCreateView.as_view(), name='payment-list'),
+
+    # Payments API endpoints
+    path('payments/', PaymentListCreateView.as_view(), name='payment-list'),  # List and create payments
+    path('payments/<int:pk>/', PaymentDetailView.as_view(), name='payment-detail'),  # Detail, update, delete
 ]

@@ -22,8 +22,8 @@ const AppRouter = () => {
         <Route path="/controlpanel" element={<ControlPanel />} />
         {/* Payments */}        
         <Route path="/payments" element={<PaymentsPage />} />
-        <Route path="/payments/new" element={<PaymentsPage />} />
-        <Route path="/payments/edit/:pk" element={<PaymentsForm />} />
+        <Route path="/payments/new" element={<PaymentsForm />} />
+        <Route path="/payments/edit/:PaymentID" element={<PaymentsForm />} />
 
       </Routes>
     </Router>

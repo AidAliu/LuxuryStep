@@ -7,6 +7,7 @@ const PaymentsForm = () => {
   const navigate = useNavigate();
 
   const [paymentData, setPaymentData] = useState({
+   // PaymentID: "",
     amount: "",
     payment_date: "",
     payment_method: "",
@@ -25,22 +26,30 @@ const PaymentsForm = () => {
           alert("No access token found.");
           return;
         }
-
+      
         setLoading(true);
         try {
           const response = await axios.get(
             `http://127.0.0.1:8000/api/payments/${PaymentID}`,
             { headers: { Authorization: `Bearer ${token}` } }
           );
-          setPaymentData(response.data); // Populate form with existing data
-          setLoading(false);
+      
+          const payment = response.data; // Destructure if needed
+          setPaymentData({
+           // PaymentID: payment.PaymentID || "",
+            amount: payment.amount || "",
+            payment_date: payment.payment_date.split("T")[0] || "",
+            payment_method: payment.payment_method || "",
+            Order: payment.Order || "",
+            User: payment.User || "",
+          });
         } catch (err) {
           console.error("Error fetching payment details:", err);
           setError("Failed to load payment details");
+        } finally {
           setLoading(false);
         }
       };
-
       fetchPayment();
     }
   }, [PaymentID]);
@@ -52,32 +61,34 @@ const PaymentsForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     const token = localStorage.getItem("accessToken");
     if (!token) {
       alert("No access token found.");
       return;
     }
-
+  
+    console.log("Submitting Payment Data: ", paymentData); // Log the paymentData before sending
+  
     try {
       setLoading(true);
-
+  
       if (PaymentID) {
-        // Update existing payment (partial update allowed)
+        // Update existing payment
         await axios.put(
-          `http://127.0.0.1:8000/api/payments/${PaymentID}`,
+          `http://127.0.0.1:8000/api/payments/${PaymentID}/`,
           paymentData,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         alert("Payment updated successfully!");
       } else {
         // Create new payment
-        await axios.post(`http://127.0.0.1:8000/api/payments`, paymentData, {
+        await axios.post(`http://127.0.0.1:8000/api/payments/`, paymentData, {
           headers: { Authorization: `Bearer ${token}` },
         });
         alert("Payment created successfully!");
       }
-
+  
       navigate("/payments"); // Redirect to payments list
     } catch (err) {
       console.error("Error saving payment:", err);
@@ -138,23 +149,25 @@ const PaymentsForm = () => {
         <div className="form-group">
           <label htmlFor="Order">Order</label>
           <input
-            type="text"
+            type="number"
             className="form-control"
             id="Order"
             name="Order"
             value={paymentData.Order}
             onChange={handleChange}
+            required={!PaymentID} // Required only when creating a new payment
           />
         </div>
         <div className="form-group">
           <label htmlFor="User">User</label>
           <input
-            type="text"
+            type="number"
             className="form-control"
             id="User"
             name="User"
             value={paymentData.User}
             onChange={handleChange}
+            required={!PaymentID} // Required only when creating a new payment
           />
         </div>
         <button type="submit" className="btn btn-primary">
