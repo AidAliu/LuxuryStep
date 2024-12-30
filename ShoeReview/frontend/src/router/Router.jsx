@@ -3,10 +3,9 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Homepage from "../views/Homepage/Homepage";
 import Login from "../views/Homepage/Login";
 import Register from "../views/Homepage/Register";
-import ControlPanel from "../components/controlpanel/ControlPanel";
-import { PaymentCreate } from "../components/payments/PaymentCreate";
-import { PaymentEdit } from "../components/payments/PaymentEdit";
-import { PaymentList } from "../components/payments/PaymentList";
+import ControlPanel from "../views/controlpanel/ControlPanel";
+import PaymentsPage from "../views/controlpanel/PaymentsPage"; 
+import PaymentsForm from "../views/controlpanel/PaymentsForm";
 
 const AppRouter = () => {
   return (
@@ -17,13 +16,15 @@ const AppRouter = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Payment Routes */}
-        <Route path="/payments" element={<PaymentList />} />
-        <Route path="/payments/new" element={<PaymentCreate />} />
-        <Route path="/payments/edit/:id" element={<PaymentEdit />} />
+        
 
         {/* Control Panel */}
         <Route path="/controlpanel" element={<ControlPanel />} />
+        {/* Payments */}        
+        <Route path="/payments" element={<PaymentsPage />} />
+        <Route path="/payments/new" element={<PaymentsPage />} />
+        <Route path="/payments/edit/:pk" element={<PaymentsForm />} />
+
       </Routes>
     </Router>
   );

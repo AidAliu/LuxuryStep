@@ -1,5 +1,3 @@
-// file: src/components/Navigation.jsx
-
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
@@ -117,59 +115,79 @@ export const Navigation = () => {
                 Contact
               </a>
             </li>
-          </ul>
 
-          {/* If user is logged in -> Show username & logout. Otherwise -> Show LOGIN / REGISTER. */}
-          {user ? (
-            <div style={{ display: "flex", gap: "10px", marginLeft: "20px" }}>
-              <span>Hello, {user.username}</span>
-              <button
-                onClick={handleLogout}
-                style={{
-                  color: "#333",
-                  border: "1px solid #ccc",
-                  borderRadius: "4px",
-                  padding: "5px 12px",
-                  fontSize: "14px",
-                  backgroundColor: "#fff",
-                  cursor: "pointer",
-                }}
-              >
-                LOGOUT
-              </button>
-            </div>
-          ) : (
-            <div style={{ display: "flex", gap: "10px", marginLeft: "20px" }}>
-              <Link
-                to="/login"
-                style={{
-                  textDecoration: "none",
-                  color: "#333",
-                  border: "1px solid #ccc",
-                  borderRadius: "4px",
-                  padding: "5px 12px",
-                  fontSize: "14px",
-                  backgroundColor: "#fff",
-                }}
-              >
-                LOGIN
-              </Link>
-              <Link
-                to="/register"
-                style={{
-                  textDecoration: "none",
-                  color: "#333",
-                  border: "1px solid #ccc",
-                  borderRadius: "4px",
-                  padding: "5px 12px",
-                  fontSize: "14px",
-                  backgroundColor: "#fff",
-                }}
-              >
-                REGISTER
-              </Link>
-            </div>
-          )}
+            {/* If user is logged in -> Show username & logout. Otherwise -> Show LOGIN / REGISTER. */}
+            {user ? (
+              <>
+                <div style={{ display: "flex", gap: "10px", marginLeft: "20px" }}>
+                  <span>Hello, {user.username}</span>
+                  <button
+                    onClick={handleLogout}
+                    style={{
+                      color: "#333",
+                      border: "1px solid #ccc",
+                      borderRadius: "4px",
+                      padding: "5px 12px",
+                      fontSize: "14px",
+                      backgroundColor: "#fff",
+                      cursor: "pointer",
+                    }}
+                  >
+                    LOGOUT
+                  </button>
+                </div>
+
+                {/* Show Control Panel button if user is logged in and is an admin */}
+                {user.is_staff && (
+                  <li style={{ marginLeft: "15px" }}>
+                    <button
+                      onClick={() => navigate("/controlpanel")}
+                      className="btn btn-danger" // Bootstrap red button class
+                      style={{
+                        color: "#fff",
+                        fontSize: "14px",
+                        padding: "5px 12px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Control Panel
+                    </button>
+                  </li>
+                )}
+              </>
+            ) : (
+              <div style={{ display: "flex", gap: "10px", marginLeft: "20px" }}>
+                <Link
+                  to="/login"
+                  style={{
+                    textDecoration: "none",
+                    color: "#333",
+                    border: "1px solid #ccc",
+                    borderRadius: "4px",
+                    padding: "5px 12px",
+                    fontSize: "14px",
+                    backgroundColor: "#fff",
+                  }}
+                >
+                  LOGIN
+                </Link>
+                <Link
+                  to="/register"
+                  style={{
+                    textDecoration: "none",
+                    color: "#333",
+                    border: "1px solid #ccc",
+                    borderRadius: "4px",
+                    padding: "5px 12px",
+                    fontSize: "14px",
+                    backgroundColor: "#fff",
+                  }}
+                >
+                  REGISTER
+                </Link>
+              </div>
+            )}
+          </ul>
         </div>
       </div>
     </nav>

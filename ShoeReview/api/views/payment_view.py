@@ -1,11 +1,12 @@
-# api/views/payment_view.py
-
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from ..models import Payment
 from ..serializers import PaymentSerializer
+from rest_framework.permissions import IsAuthenticated
 
+class PaymentDetailView(APIView):
+    permission_classes = [IsAuthenticated]
 class PaymentListCreateView(APIView):
     def get(self, request):
         """

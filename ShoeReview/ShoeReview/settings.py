@@ -32,7 +32,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',  
     'api.apps.ApiConfig', 
-    'controlpanel' 
+    
 ]
 
 MIDDLEWARE = [
@@ -76,9 +76,10 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny', 
     ),
 }
+
 
 
 # Database settings
@@ -103,6 +104,10 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
+]
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
 ]
 
 import environ

@@ -9,6 +9,7 @@ from .views.user_view import (
     UserListView,
     UserDetailView
 )
+from .views.payment_view import PaymentListCreateView
 
 urlpatterns = [
     # Login (JWT)
@@ -27,4 +28,7 @@ urlpatterns = [
     # Example user endpoints (staff only)
     path('users/', UserListView.as_view(), name='user-list'),
     path('users/<int:pk>/', UserDetailView.as_view(), name='user-detail'),
+    
+    # Payments API endpoint (GET for list of payments)
+    path('payments/', PaymentListCreateView.as_view(), name='payment-list'),
 ]
