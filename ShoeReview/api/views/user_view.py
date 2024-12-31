@@ -8,6 +8,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
+
 from ..serializers import UserSerializer
 
 class RegisterView(APIView):
@@ -92,7 +93,6 @@ def get_control_panel_data(request):
         return Response(data)
 
     except Exception as e:
-        # Log the error
         import logging
         logger = logging.getLogger(__name__)
         logger.error(f"Error in control panel data: {e}")
@@ -101,6 +101,9 @@ def get_control_panel_data(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_current_user(request):
+    """
+    Returns the current logged-in user's info.
+    """
     user = request.user
     data = {
         "username": user.username,
@@ -134,6 +137,7 @@ class UserDetailView(APIView):
     def get(self, request, pk):
         try:
             user = User.objects.get(pk=pk)
+            # Only staff OR the user themself can see their info
             if not (request.user.is_staff or request.user == user):
                 raise PermissionDenied("Not authorized.")
             serializer = UserSerializer(user)
@@ -142,11 +146,22 @@ class UserDetailView(APIView):
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, pk):
+        """
+        Staff or the user can update.
+        If the target user is superuser, only another superuser can update them.
+        """
         try:
-            user = User.objects.get(pk=pk)
-            if not (request.user.is_staff or request.user == user):
+            user_to_update = User.objects.get(pk=pk)
+
+            # If not staff and not the same user => deny
+            if not (request.user.is_staff or request.user == user_to_update):
                 raise PermissionDenied("Not authorized.")
-            serializer = UserSerializer(user, data=request.data, partial=True)
+
+            # If the user to be updated is a superuser, ensure the request.user is also a superuser
+            if user_to_update.is_superuser and not request.user.is_superuser:
+                raise PermissionDenied("Only superusers can edit superuser accounts.")
+
+            serializer = UserSerializer(user_to_update, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data)
@@ -155,11 +170,21 @@ class UserDetailView(APIView):
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
     def delete(self, request, pk):
+        """
+        Only staff can delete. If the user is superuser, only another superuser can delete them.
+        """
         try:
-            user = User.objects.get(pk=pk)
+            user_to_delete = User.objects.get(pk=pk)
+
             if not request.user.is_staff:
                 raise PermissionDenied("Only staff can delete users.")
-            user.delete()
+
+            # Prevent staff from deleting a superuser
+            if user_to_delete.is_superuser and not request.user.is_superuser:
+                raise PermissionDenied("Only a superuser can delete another superuser.")
+
+            user_to_delete.delete()
             return Response({"message": "User deleted."}, status=status.HTTP_204_NO_CONTENT)
+
         except User.DoesNotExist:
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
