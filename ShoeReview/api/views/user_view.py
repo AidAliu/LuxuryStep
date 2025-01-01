@@ -9,6 +9,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 
+
 from ..serializers import UserSerializer
 
 class RegisterView(APIView):
@@ -74,9 +75,10 @@ def get_control_panel_data(request):
         total_users = User.objects.count()
 
         # Example models: replace with actual models used in your project
-        from api.models import Order, Payment
+        from api.models import Order, Payment, Brand
         total_orders = Order.objects.count()
         total_payments = Payment.objects.count()
+        total_brands = Brand.objects.count();
 
         recent_payments = Payment.objects.order_by('PaymentID')[:5]
         recent_payments_data = [
@@ -88,6 +90,7 @@ def get_control_panel_data(request):
             "total_users": total_users,
             "total_orders": total_orders,
             "total_payments": total_payments,
+            "total_brands": total_brands,
             "recent_payments": recent_payments_data,
         }
         return Response(data)

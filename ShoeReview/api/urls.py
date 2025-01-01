@@ -9,6 +9,7 @@ from .views.user_view import (
 )
 from .views.payment_view import PaymentListCreateView, PaymentDetailView
 from .views.shoe_view import ShoeListView, ShoeDetailView
+from .views.brand_view import BrandDetailView, BrandListCreateView
 
 urlpatterns = [
     # Login (JWT)
@@ -35,4 +36,8 @@ urlpatterns = [
      # Shoes API endpoints
     path('shoes/', ShoeListView.as_view(), name='shoe-list'),  # List and create shoes
     path('shoes/<int:pk>/', ShoeDetailView.as_view(), name='shoe-detail'),  # Detail, update, delete
+
+     # Brand API endpoints
+    path('brands/', BrandListCreateView.as_view(), name='brand-list'),
+    path('brands/<int:pk>/', BrandDetailView.as_view(), name='brand-detail'),
 ]

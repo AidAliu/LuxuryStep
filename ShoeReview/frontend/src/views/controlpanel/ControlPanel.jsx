@@ -76,6 +76,13 @@ const ControlPanel = () => {
         >
           Manage Orders
         </button>
+        <button
+          className="btn btn-primary mx-2"
+          style={{ margin: '0 10px' }}
+          onClick={() => (window.location.href = '/brands')}
+        >
+          Manage Brands
+        </button>
       </div>
 
       <div className="mt-4">
@@ -87,6 +94,8 @@ const ControlPanel = () => {
           <li className="list-group-item">Total Users: {data.total_users || 0}</li>
           <li className="list-group-item">Total Orders: {data.total_orders || 0}</li>
           <li className="list-group-item">Total Payments: {data.total_payments || 0}</li>
+          <li className="list-group-item">Total Brands: {data.total_brands || 0}</li>
+
         </ul>
 
         <div className="text-center mt-4">

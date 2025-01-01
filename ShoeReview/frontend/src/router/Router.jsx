@@ -10,6 +10,8 @@ import UsersForm from "../views/controlpanel/Users/UsersForm";
 import UsersPage from "../views/controlpanel/Users/UsersPage";
 import ShoesPage from "../views/controlpanel/Shoes/ShoesPage";
 import ShoesForm from "../views/controlpanel/Shoes/ShoesForm";
+import BrandsPage from "../views/controlpanel/Brands/BrandsPage";
+import BrandsForm from "../views/controlpanel/Brands/BrandsForm";
 
 const AppRouter = () => {
   return (
@@ -39,6 +41,10 @@ const AppRouter = () => {
         <Route path="/shoes/new" element={<ShoesForm />} />
         <Route path="/shoes/edit/:ShoeID" element={<ShoesForm />} />
 
+        {/* Brand */}
+        <Route path='/brands' element={<BrandsPage/>} />
+        <Route path='/brands/new' element={<BrandsForm/>} />
+        <Route path='/brands/edit/:BrandID' element={<BrandsForm/>} />
       </Routes>
     </Router>
   );
