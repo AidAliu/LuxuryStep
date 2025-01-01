@@ -83,6 +83,13 @@ const ControlPanel = () => {
         >
           Manage Brands
         </button>
+        <button
+          className="btn btn-primary mx-2"
+          style={{ margin: '0 10px' }}
+          onClick={() => (window.location.href = '/reviews')}
+        >
+          Manage Reviews
+        </button>
       </div>
 
       <div className="mt-4">

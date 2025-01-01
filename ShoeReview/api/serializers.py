@@ -72,11 +72,17 @@ class OrderSerializer(serializers.ModelSerializer):
 # Review Serializer
 class ReviewSerializer(serializers.ModelSerializer):
     User = UserSerializer(read_only=True)  # Nested User details for reviews
-    Shoe = ShoeSerializer(read_only=True)  # Nested Shoe details for reviews
+    Shoe = serializers.PrimaryKeyRelatedField(queryset=Shoe.objects.all())  # Allow writable Shoe field
 
     class Meta:
         model = Review
         fields = '__all__'
+
+    def create(self, validated_data):
+        # Automatically set the User as the authenticated user
+        user = self.context['request'].user
+        return Review.objects.create(User=user, **validated_data)
+
 
 # Style Serializer
 class StyleSerializer(serializers.ModelSerializer):

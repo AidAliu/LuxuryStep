@@ -10,6 +10,7 @@ from .views.user_view import (
 from .views.payment_view import PaymentListCreateView, PaymentDetailView
 from .views.shoe_view import ShoeListView, ShoeDetailView
 from .views.brand_view import BrandDetailView, BrandListCreateView
+from .views.review_view import ReviewDetailView, ReviewListCreateView
 
 urlpatterns = [
     # Login (JWT)
@@ -40,4 +41,8 @@ urlpatterns = [
      # Brand API endpoints
     path('brands/', BrandListCreateView.as_view(), name='brand-list'),
     path('brands/<int:pk>/', BrandDetailView.as_view(), name='brand-detail'),
+
+    # Review API endpoints
+    path('reviews/', ReviewListCreateView.as_view(), name='review-list'),
+    path('reviews/<int:pk>/', ReviewDetailView.as_view(), name='review-detail'),
 ]

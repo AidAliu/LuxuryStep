@@ -4,6 +4,8 @@ from rest_framework import status
 from ..models import Review
 from ..serializers import ReviewSerializer
 
+
+
 class ReviewListCreateView(APIView):
     def get(self, request):
         reviews = Review.objects.all()
@@ -11,11 +13,13 @@ class ReviewListCreateView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = ReviewSerializer(data=request.data)
+        # Pass the request context to the serializer
+        serializer = ReviewSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class ReviewDetailView(APIView):
     def get(self, request, pk):
@@ -29,7 +33,8 @@ class ReviewDetailView(APIView):
     def put(self, request, pk):
         try:
             review = Review.objects.get(pk=pk)
-            serializer = ReviewSerializer(review, data=request.data)
+            # Pass the request context here too
+            serializer = ReviewSerializer(review, data=request.data, context={'request': request})
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data)
