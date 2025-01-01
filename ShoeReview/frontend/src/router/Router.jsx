@@ -4,10 +4,12 @@ import Homepage from "../views/Homepage/Homepage";
 import Login from "../views/Homepage/Login";
 import Register from "../views/Homepage/Register";
 import ControlPanel from "../views/controlpanel/ControlPanel";
-import PaymentsPage from "../views/controlpanel/PaymentsPage"; 
-import PaymentsForm from "../views/controlpanel/PaymentsForm";
-import UsersForm from "../views/controlpanel/UsersForm";
-import UsersPage from "../views/controlpanel/UsersPage";
+import PaymentsPage from "../views/controlpanel/Payments/PaymentsPage"; 
+import PaymentsForm from "../views/controlpanel/Payments/PaymentsForm";
+import UsersForm from "../views/controlpanel/Users/UsersForm";
+import UsersPage from "../views/controlpanel/Users/UsersPage";
+import ShoesPage from "../views/controlpanel/Shoes/ShoesPage";
+import ShoesForm from "../views/controlpanel/Shoes/ShoesForm";
 
 const AppRouter = () => {
   return (
@@ -31,6 +33,12 @@ const AppRouter = () => {
          <Route path="/users" element={<UsersPage />} />
         <Route path="/users/new" element={<UsersForm />} />
         <Route path="/users/edit/:userId" element={<UsersForm />} />
+
+        {/* Shoes */}
+        <Route path="/shoes" element={<ShoesPage />} />
+        <Route path="/shoes/new" element={<ShoesForm />} />
+        <Route path="/shoes/edit/:ShoeID" element={<ShoesForm />} />
+
       </Routes>
     </Router>
   );

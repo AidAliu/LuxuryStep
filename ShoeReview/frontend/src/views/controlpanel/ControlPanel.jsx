@@ -73,30 +73,7 @@ const ControlPanel = () => {
 
       <div className="mt-4">
         <h2 className="mb-4 fw-bold text-danger">Dashboard Overview</h2>
-        {data.recent_payments && Array.isArray(data.recent_payments) && data.recent_payments.length > 0 ? (
-          <div className="table-responsive">
-            <table className="table table-bordered table-striped">
-              <thead>
-                <tr>
-                  {Object.keys(data.recent_payments[0]).map((key) => (
-                    <th key={key}>{key}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {data.recent_payments.map((payment, index) => (
-                  <tr key={index}>
-                    {Object.values(payment).map((value, i) => (
-                      <td key={i}>{value?.toString() || '-'}</td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <p>No recent payments available</p>
-        )}
+        
 
         <h3 className="mt-4">Summary</h3>
         <ul className="list-group">

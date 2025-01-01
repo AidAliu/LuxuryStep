@@ -8,6 +8,7 @@ from .views.user_view import (
     UserDetailView,
 )
 from .views.payment_view import PaymentListCreateView, PaymentDetailView
+from .views.shoe_view import ShoeListView, ShoeDetailView
 
 urlpatterns = [
     # Login (JWT)
@@ -30,4 +31,8 @@ urlpatterns = [
     # Payments API endpoints
     path('payments/', PaymentListCreateView.as_view(), name='payment-list'),  # List and create payments
     path('payments/<int:pk>/', PaymentDetailView.as_view(), name='payment-detail'),  # Detail, update, delete
+    
+     # Shoes API endpoints
+    path('shoes/', ShoeListView.as_view(), name='shoe-list'),  # List and create shoes
+    path('shoes/<int:pk>/', ShoeDetailView.as_view(), name='shoe-detail'),  # Detail, update, delete
 ]
