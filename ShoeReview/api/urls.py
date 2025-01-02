@@ -12,6 +12,10 @@ from .views.shoe_view import ShoeListView, ShoeDetailView
 from .views.brand_view import BrandDetailView, BrandListCreateView
 from .views.review_view import ReviewDetailView, ReviewListCreateView
 from .views.style_view import StyleDetailView, StyleListCreateView
+from .views.order_view import OrderDetailView, OrderListCreateView
+from .views.order_item_view import OrderItemDetailView, OrderItemListCreateView
+
+
 
 urlpatterns = [
     # Login (JWT)
@@ -50,4 +54,11 @@ urlpatterns = [
     # Style API endpoints
     path('styles/', StyleListCreateView.as_view(), name='style-list'),
     path('styles/<int:pk>/', StyleDetailView.as_view(), name='style-detail'),
+
+    #Order/Order Item API endpoints
+    path('orders/', OrderListCreateView.as_view(), name='order-list-create'),
+    path('orders/<int:pk>/', OrderDetailView.as_view(), name='order-detail'),
+    path('order-items/', OrderItemListCreateView.as_view(), name='order-item-list-create'),
+    path('order-items/<int:pk>/', OrderItemDetailView.as_view(), name='order-item-detail'),
+
 ]

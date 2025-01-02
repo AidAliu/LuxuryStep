@@ -16,6 +16,10 @@ import ReviewPage from "../views/controlpanel/Reviews/ReviewPage";
 import ReviewForm from "../views/controlpanel/Reviews/ReviewForm";
 import StyleForm from "../views/controlpanel/Styles/StylesForm";
 import StylePage from "../views/controlpanel/Styles/StylesPage";
+import OrdersForm from "../views/controlpanel/Orders/OrdersForm";
+import OrdersPage from "../views/controlpanel/Orders/OrdersPage";
+import OrderItemForm from "../views/controlpanel/OrderItems/OrderItemForm";
+import OrderItemPage from "../views/controlpanel/OrderItems/OrderItemPage";
 
 const AppRouter = () => {
   return (
@@ -59,6 +63,18 @@ const AppRouter = () => {
         <Route path='/styles' element={<StylePage/>} />
         <Route path='/styles/new' element={<StyleForm/>} />
         <Route path='/styles/edit/:StyleID' element={<StyleForm/>} />
+
+        {/* Orders */}
+        <Route path="/orders" element={<OrdersPage />} />
+        <Route path="/orders/new" element={<OrdersForm />} />
+        <Route path="/orders/edit/:OrderID" element={<OrdersForm />} />
+
+{/* Order Items */}
+<Route path="/order-items" element={<OrderItemPage />} />
+<Route path="/order-items/new" element={<OrderItemForm />} />
+<Route path="/order-items/edit/:OrderItemID" element={<OrderItemForm />} />
+       
+        
       </Routes>
     </Router>
   );
