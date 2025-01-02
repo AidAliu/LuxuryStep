@@ -90,8 +90,15 @@ const ControlPanel = () => {
         >
           Manage Reviews
         </button>
-      </div>
 
+        <button
+          className="btn btn-primary mx-2"
+          style={{ margin: '0 10px' }}
+          onClick={() => (window.location.href = '/styles')}
+        >
+          Manage Styles
+        </button>
+      </div>
       <div className="mt-4">
         <h2 className="mb-4 fw-bold text-danger">Dashboard Overview</h2>
         

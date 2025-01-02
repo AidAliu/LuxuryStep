@@ -14,6 +14,8 @@ import BrandsPage from "../views/controlpanel/Brands/BrandsPage";
 import BrandsForm from "../views/controlpanel/Brands/BrandsForm";
 import ReviewPage from "../views/controlpanel/Reviews/ReviewPage";
 import ReviewForm from "../views/controlpanel/Reviews/ReviewForm";
+import StyleForm from "../views/controlpanel/Styles/StylesForm";
+import StylePage from "../views/controlpanel/Styles/StylesPage";
 
 const AppRouter = () => {
   return (
@@ -52,6 +54,11 @@ const AppRouter = () => {
         <Route path='/reviews' element={<ReviewPage/>} />
         <Route path='/reviews/new' element={<ReviewForm/>} />
         <Route path='/reviews/edit/:ReviewID' element={<ReviewForm/>} />
+
+        {/* Style */}
+        <Route path='/styles' element={<StylePage/>} />
+        <Route path='/styles/new' element={<StyleForm/>} />
+        <Route path='/styles/edit/:StyleID' element={<StyleForm/>} />
       </Routes>
     </Router>
   );

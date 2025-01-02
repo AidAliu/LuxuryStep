@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from .models import (
     Shoe, 
     Brand, 
-    Category, 
     Wishlist, 
     WishlistItem, 
     Order, 
@@ -29,12 +28,6 @@ class ShoeSerializer(serializers.ModelSerializer):
 class BrandSerializer(serializers.ModelSerializer):
     class Meta:
         model = Brand
-        fields = '__all__'
-
-# Category Serializer
-class CategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Category
         fields = '__all__'
 
 # WishlistItem Serializer

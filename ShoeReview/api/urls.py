@@ -11,6 +11,7 @@ from .views.payment_view import PaymentListCreateView, PaymentDetailView
 from .views.shoe_view import ShoeListView, ShoeDetailView
 from .views.brand_view import BrandDetailView, BrandListCreateView
 from .views.review_view import ReviewDetailView, ReviewListCreateView
+from .views.style_view import StyleDetailView, StyleListCreateView
 
 urlpatterns = [
     # Login (JWT)
@@ -45,4 +46,8 @@ urlpatterns = [
     # Review API endpoints
     path('reviews/', ReviewListCreateView.as_view(), name='review-list'),
     path('reviews/<int:pk>/', ReviewDetailView.as_view(), name='review-detail'),
+
+    # Style API endpoints
+    path('styles/', StyleListCreateView.as_view(), name='style-list'),
+    path('styles/<int:pk>/', StyleDetailView.as_view(), name='style-detail'),
 ]
