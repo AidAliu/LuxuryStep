@@ -72,9 +72,9 @@ const OrdersPage = () => {
         </thead>
         <tbody>
           {orders.map((order) => (
-            <tr key={order.id}>
+            <tr key={order.OrderID}>
               <td>{order.OrderID}</td>
-              <td>{order.User.username}</td>
+              <td>{order.username}</td>
               <td>{order.total_price}</td>
               <td>{order.shipping_address}</td>
               <td>{order.status}</td>
@@ -96,6 +96,7 @@ const OrdersPage = () => {
           ))}
         </tbody>
       </table>
+      {error && <p className="text-danger">{error}</p>}
     </div>
   );
 };

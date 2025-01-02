@@ -43,7 +43,7 @@ class OrderDetailView(APIView):
 
     def put(self, request, pk):
         order = get_object_or_404(Order, pk=pk)
-        serializer = OrderSerializer(order, data=request.data, partial=True)  # Support partial updates
+        serializer = OrderSerializer(order, data=request.data, partial=True, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)

@@ -7,15 +7,16 @@ const OrdersForm = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    // User: "",
+    User: "", // Add User field to formData
     total_price: "",
     shipping_address: "",
     status: "Pending",
   });
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState([]); // List of users
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Fetch users
   useEffect(() => {
     const fetchUsers = async () => {
       const token = localStorage.getItem("accessToken");
@@ -38,6 +39,7 @@ const OrdersForm = () => {
     fetchUsers();
   }, []);
 
+  // Fetch order details if editing
   useEffect(() => {
     if (OrderID) {
       const fetchOrder = async () => {
@@ -63,51 +65,53 @@ const OrdersForm = () => {
     }
   }, [OrderID]);
 
+  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const token = localStorage.getItem("accessToken");
     if (!token) {
-        alert("No access token found.");
-        return;
+      alert("No access token found.");
+      return;
     }
 
     try {
-        setLoading(true);
-        const payload = {
-            // User: formData.User, 
-            total_price: parseFloat(formData.total_price),
-            shipping_address: formData.shipping_address,
-            status: formData.status,
-        };
+      setLoading(true);
+      const payload = {
+        User: formData.User, // Include selected user
+        total_price: parseFloat(formData.total_price),
+        shipping_address: formData.shipping_address,
+        status: formData.status,
+      };
 
-        console.log("Payload to be sent:", payload);
+      if (OrderID) {
+        await axios.put(
+          `http://127.0.0.1:8000/api/orders/${OrderID}/`,
+          payload,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        alert("Order updated successfully!");
+      } else {
+        await axios.post(`http://127.0.0.1:8000/api/orders/`, payload, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        alert("Order created successfully!");
+      }
 
-        if (OrderID) {
-            await axios.put(`http://127.0.0.1:8000/api/orders/${OrderID}/`, payload, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            alert("Order updated successfully!");
-        } else {
-            await axios.post(`http://127.0.0.1:8000/api/orders/`, payload, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            alert("Order created successfully!");
-        }
-
-        navigate("/orders");
+      navigate("/orders");
     } catch (err) {
-        console.error("Error saving order:", err);
-        alert("Failed to save order.");
+      console.error("Error saving order:", err);
+      alert("Failed to save order.");
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-};
+  };
 
   return (
     <div className="container py-4">
@@ -115,7 +119,28 @@ const OrdersForm = () => {
         {OrderID ? "Edit Order" : "Create Order"}
       </h1>
       <form onSubmit={handleSubmit} className="form-group">
-        
+        <div className="mb-3">
+          <label htmlFor="User" className="form-label">
+            User
+          </label>
+          <select
+            className="form-control"
+            id="User"
+            name="User"
+            value={formData.User}
+            onChange={handleChange}
+            required
+          >
+            <option value="" disabled>
+              Select a user
+            </option>
+            {users.map((user) => (
+              <option key={user.id} value={user.id}>
+                {user.username}
+              </option>
+            ))}
+          </select>
+        </div>
         <div className="mb-3">
           <label htmlFor="total_price" className="form-label">
             Total Price
@@ -164,6 +189,7 @@ const OrdersForm = () => {
           {OrderID ? "Update Order" : "Create Order"}
         </button>
       </form>
+      {error && <p className="text-danger">{error}</p>}
     </div>
   );
 };

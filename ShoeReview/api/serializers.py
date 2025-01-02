@@ -68,18 +68,30 @@ class OrderItemSerializer(serializers.ModelSerializer):
         return value
 
 
-# Order Serializer
 class OrderSerializer(serializers.ModelSerializer):
-    User = UserSerializer(read_only=True)
-
+    User = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), required=False)
+    username = serializers.CharField(source='User.username', read_only=True)
     class Meta:
         model = Order
         fields = '__all__'
 
     def create(self, validated_data):
-        # Automatically set the User as the authenticated user
-        user = self.context['request'].user
+        user = validated_data.pop('User', None)
+        if not user:
+            user = self.context['request'].user  # Default to the authenticated user
         return Order.objects.create(User=user, **validated_data)
+
+    def update(self, instance, validated_data):
+        # Update the User field if included in the payload
+        if 'User' in validated_data:
+            instance.User = validated_data.pop('User')
+        # Update other fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
+
+
 
 
 # Review Serializer
