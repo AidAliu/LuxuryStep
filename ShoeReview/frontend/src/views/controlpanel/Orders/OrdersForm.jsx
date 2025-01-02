@@ -7,7 +7,7 @@ const OrdersForm = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-  //User: "",
+    User: "",
     total_price: "",
     shipping_address: "",
     status: "Pending",
@@ -73,35 +73,41 @@ const OrdersForm = () => {
 
     const token = localStorage.getItem("accessToken");
     if (!token) {
-      alert("No access token found.");
-      return;
+        alert("No access token found.");
+        return;
     }
 
     try {
-      setLoading(true);
+        setLoading(true);
+        const payload = {
+            User: formData.User, 
+            total_price: parseFloat(formData.total_price),
+            shipping_address: formData.shipping_address,
+            status: formData.status,
+        };
 
-      if (OrderID) {
-        await axios.put(
-          `http://127.0.0.1:8000/api/orders/${OrderID}/`,
-          formData,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        alert("Order updated successfully!");
-      } else {
-        await axios.post(`http://127.0.0.1:8000/api/orders/`, formData, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        alert("Order created successfully!");
-      }
+        console.log("Payload to be sent:", payload);
 
-      navigate("/orders");
+        if (OrderID) {
+            await axios.put(`http://127.0.0.1:8000/api/orders/${OrderID}/`, payload, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            alert("Order updated successfully!");
+        } else {
+            await axios.post(`http://127.0.0.1:8000/api/orders/`, payload, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            alert("Order created successfully!");
+        }
+
+        navigate("/orders");
     } catch (err) {
-      console.error("Error saving order:", err);
-      alert("Failed to save order.");
+        console.error("Error saving order:", err);
+        alert("Failed to save order.");
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+};
 
   return (
     <div className="container py-4">

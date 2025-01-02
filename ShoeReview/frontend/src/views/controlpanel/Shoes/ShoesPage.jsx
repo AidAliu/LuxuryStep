@@ -85,7 +85,6 @@ const ShoesPage = () => {
                 <th>Name</th>
                 <th>BrandID</th>
                 <th>StyleID</th>
-                <th>CategoryID</th>
                 <th>Price</th>
                 <th>Size</th>
                 <th>Stock</th>
@@ -100,7 +99,6 @@ const ShoesPage = () => {
                   <td>{shoes.name}</td>
                   <td>{shoes.BrandID}</td>
                   <td>{shoes.StyleID}</td>
-                  <td>{shoes.CategoryID}</td>
                   <td>{shoes.price}</td>
                   <td>{shoes.size}</td>
                   <td>{shoes.stock}</td>

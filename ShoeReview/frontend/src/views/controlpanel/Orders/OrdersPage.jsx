@@ -29,7 +29,7 @@ const OrdersPage = () => {
     fetchOrders();
   }, []);
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (OrderID) => {
     if (!window.confirm("Are you sure you want to delete this order?")) return;
 
     const token = localStorage.getItem("accessToken");
@@ -39,10 +39,10 @@ const OrdersPage = () => {
     }
 
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/orders/${id}/`, {
+      await axios.delete(`http://127.0.0.1:8000/api/orders/${OrderID}/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setOrders(orders.filter((order) => order.id !== id));
+      setOrders(orders.filter((order) => order.OrderID !== OrderID));
       alert("Order deleted successfully!");
     } catch (err) {
       console.error("Error deleting order:", err);
@@ -73,21 +73,21 @@ const OrdersPage = () => {
         <tbody>
           {orders.map((order) => (
             <tr key={order.id}>
-              <td>{order.id}</td>
-              <td>{order.User}</td>
+              <td>{order.OrderID}</td>
+              <td>{order.User.username}</td>
               <td>{order.total_price}</td>
               <td>{order.shipping_address}</td>
               <td>{order.status}</td>
               <td>
                 <button
                   className="btn btn-warning mx-1"
-                  onClick={() => navigate(`/orders/edit/${order.id}`)}
+                  onClick={() => navigate(`/orders/edit/${order.OrderID}`)}
                 >
                   Edit
                 </button>
                 <button
                   className="btn btn-danger mx-1"
-                  onClick={() => handleDelete(order.id)}
+                  onClick={() => handleDelete(order.OrderID)}
                 >
                   Delete
                 </button>

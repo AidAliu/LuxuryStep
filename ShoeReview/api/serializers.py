@@ -1,13 +1,14 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
+from django.db import transaction
 from .models import (
-    Shoe, 
-    Brand, 
-    Wishlist, 
-    WishlistItem, 
-    Order, 
-    OrderItem, 
-    Review, 
+    Shoe,
+    Brand,
+    Wishlist,
+    WishlistItem,
+    Order,
+    OrderItem,
+    Review,
     Style,
     Payment
 )
@@ -75,45 +76,73 @@ class OrderSerializer(serializers.ModelSerializer):
         model = Order
         fields = '__all__'
 
-    # Custom validation for items field
+    # Custom validation for the items field
     def validate_items(self, value):
         if not value:
             raise serializers.ValidationError("Order must contain at least one item.")
+        for item in value:
+            if item.get('quantity', 0) <= 0:
+                raise serializers.ValidationError("Each item must have a quantity greater than 0.")
+            if item.get('price', 0) <= 0:
+                raise serializers.ValidationError("Each item must have a price greater than 0.")
         return value
 
-    # Create method: Handles creation of an Order and its associated OrderItems
     def create(self, validated_data):
-        items_data = validated_data.pop('items', [])  # Extract items from validated data
-        order = Order.objects.create(**validated_data)  # Create the Order instance
-        total_price = 0 
+        """
+        Create an Order and its related OrderItems atomically.
+        """
+        items_data = validated_data.pop('items', [])  # Extract 'items' field
+        total_price = 0  # Initialize total price
 
-        # Loop through items data to create associated OrderItems
-        for item_data in items_data:
-            item = OrderItem.objects.create(Order=order, **item_data)
-            total_price += item.price * item.quantity  # Update total price
+        # Debugging: Print validated data
+        print("Creating Order with data:", validated_data)
+        print("Order Items:", items_data)
 
-        order.total_price = total_price  # Set the computed total price
-        order.save()  # Save the Order with the updated total price
+        with transaction.atomic():  # Ensures all changes are atomic
+            try:
+                # Create the Order instance
+                order = Order.objects.create(**validated_data)
+                print(f"Order created: {order.id}")
+
+                # Create associated OrderItems
+                for item_data in items_data:
+                    print("Processing item:", item_data)
+                    item = OrderItem.objects.create(Order=order, **item_data)
+                    total_price += item.price * item.quantity  # Calculate total price
+
+                # Update and save the total price
+                order.total_price = total_price
+                order.save()
+
+            except Exception as e:
+                print("Error creating order:", str(e))
+                raise serializers.ValidationError({"detail": "An error occurred while creating the order. Please check your input and try again."})
+
+        print("Order successfully created with total price:", total_price)
         return order
 
-    # Update method: Handles updating of an Order and its associated OrderItems
     def update(self, instance, validated_data):
-        items_data = validated_data.pop('items', [])  # Extract items from validated data
+        items_data = validated_data.pop('items', None)  # Extract items, if provided
 
-        # Update fields for the Order instance
-        instance.status = validated_data.get('status', instance.status)
-        instance.shipping_address = validated_data.get('shipping_address', instance.shipping_address)
-        instance.save()
+        with transaction.atomic():  # Ensures atomicity of the operation
+            # Update fields for the Order instance
+            instance.status = validated_data.get('status', instance.status)
+            instance.shipping_address = validated_data.get('shipping_address', instance.shipping_address)
+            instance.save()
 
-        # Clear existing OrderItems and calculate the new total price
-        instance.items.all().delete()  # Delete all related OrderItems
-        total_price = 0  # Initialize total price
-        for item_data in items_data:
-            item = OrderItem.objects.create(Order=instance, **item_data)
-            total_price += item.price * item.quantity  # Update total price
+            if items_data is not None:  # Update items only if provided
+                # Delete existing OrderItems
+                instance.items.all().delete()
+                total_price = 0  # Recalculate total price
 
-        instance.total_price = total_price  # Set the computed total price
-        instance.save()  # Save the Order with updated total price
+                # Create new OrderItems
+                for item_data in items_data:
+                    item = OrderItem.objects.create(Order=instance, **item_data)
+                    total_price += item.price * item.quantity  # Update total price
+
+                instance.total_price = total_price  # Set the computed total price
+                instance.save()  # Save the Order with updated total price
+
         return instance
 
 # Review Serializer
@@ -137,7 +166,7 @@ class StyleSerializer(serializers.ModelSerializer):
         model = Style
         fields = '__all__'
 
-# PaymentSerializer
+# Payment Serializer
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment

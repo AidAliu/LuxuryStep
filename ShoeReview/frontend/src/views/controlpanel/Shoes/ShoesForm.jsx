@@ -42,7 +42,6 @@ const ShoesForm = () => {
             name: shoe.name || "",
             BrandID: shoe.BrandID || "",
             StyleID: shoe.StyleID || "",
-            CategoryID: shoe.CategoryID || "",
             price: shoe.price || "",
             size: shoe.size || "",
             stock: shoe.stock || "",
@@ -146,18 +145,6 @@ const ShoesForm = () => {
             id="StyleID"
             name="StyleID"
             value={shoeData.StyleID}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="CategoryID">Category ID</label>
-          <input
-            type="number"
-            className="form-control"
-            id="CategoryID"
-            name="CategoryID"
-            value={shoeData.CategoryID}
             onChange={handleChange}
             required
           />
