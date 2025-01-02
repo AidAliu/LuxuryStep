@@ -7,7 +7,7 @@ const OrdersForm = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    User: "",
+    // User: "",
     total_price: "",
     shipping_address: "",
     status: "Pending",
@@ -80,7 +80,7 @@ const OrdersForm = () => {
     try {
         setLoading(true);
         const payload = {
-            User: formData.User, 
+            // User: formData.User, 
             total_price: parseFloat(formData.total_price),
             shipping_address: formData.shipping_address,
             status: formData.status,
@@ -115,26 +115,7 @@ const OrdersForm = () => {
         {OrderID ? "Edit Order" : "Create Order"}
       </h1>
       <form onSubmit={handleSubmit} className="form-group">
-        <div className="mb-3">
-          <label htmlFor="User" className="form-label">
-            User
-          </label>
-          <select
-            className="form-control"
-            id="User"
-            name="User"
-            value={formData.User}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select User</option>
-            {users.map((user) => (
-              <option key={user.id} value={user.id}>
-                {user.username}
-              </option>
-            ))}
-          </select>
-        </div>
+        
         <div className="mb-3">
           <label htmlFor="total_price" className="form-label">
             Total Price

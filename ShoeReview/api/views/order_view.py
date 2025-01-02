@@ -10,7 +10,6 @@ class OrderListCreateView(APIView):
     """
     Handles retrieving all orders and creating a new order.
     """
-
     def get(self, request):
         orders = Order.objects.all()
         serializer = OrderSerializer(orders, many=True)
@@ -20,7 +19,8 @@ class OrderListCreateView(APIView):
         # Log the incoming request data for debugging
         print("Incoming data:", request.data)
 
-        serializer = OrderSerializer(data=request.data)
+        # Pass the request context to the serializer
+        serializer = OrderSerializer(data=request.data, context={'request': request})
 
         if serializer.is_valid():
             serializer.save()
@@ -30,7 +30,6 @@ class OrderListCreateView(APIView):
         print("Serializer errors:", serializer.errors)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class OrderDetailView(APIView):
     """

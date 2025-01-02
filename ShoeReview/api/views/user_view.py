@@ -8,6 +8,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
+from api.models import Order, Payment, Brand, Shoe, Review, Style, OrderItem
+
 
 
 from ..serializers import UserSerializer
@@ -79,6 +81,10 @@ def get_control_panel_data(request):
         total_orders = Order.objects.count()
         total_payments = Payment.objects.count()
         total_brands = Brand.objects.count();
+        total_shoes = Shoe.objects.count();
+        total_reviews = Review.objects.count();
+        total_styles = Style.objects.count();
+        total_order_items = OrderItem.objects.count();
 
         recent_payments = Payment.objects.order_by('PaymentID')[:5]
         recent_payments_data = [
@@ -91,7 +97,11 @@ def get_control_panel_data(request):
             "total_orders": total_orders,
             "total_payments": total_payments,
             "total_brands": total_brands,
+            "total_shoes" : total_shoes,
+            "total_reviews" : total_reviews,
+            "total_styles" : total_styles,
             "recent_payments": recent_payments_data,
+            "total_order_items" : total_order_items
         }
         return Response(data)
 

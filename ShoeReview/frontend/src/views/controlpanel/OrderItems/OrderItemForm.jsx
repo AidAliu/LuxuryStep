@@ -126,8 +126,8 @@ const OrderItemForm = () => {
           >
             <option value="">Select Order</option>
             {orders.map((order) => (
-              <option key={order.id} value={order.id}>
-                {order.id}
+              <option key={order.OrderID} value={order.OrderID}>
+                {order.OrderID}
               </option>
             ))}
           </select>
@@ -138,13 +138,13 @@ const OrderItemForm = () => {
             className="form-control"
             id="Shoe"
             name="Shoe"
-            value={formData.Shoe}
+            value={formData.Shoe.ShoeID}
             onChange={handleChange}
             required
           >
             <option value="">Select Shoe</option>
             {shoes.map((shoe) => (
-              <option key={shoe.id} value={shoe.id}>
+              <option key={shoe.ShoeID} value={shoe.ShoeID}>
                 {shoe.name}
               </option>
             ))}
