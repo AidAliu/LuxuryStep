@@ -105,6 +105,22 @@ const ControlPanel = () => {
         >
           Manage Styles
         </button>
+        
+        <button
+          className="btn btn-primary mx-2"
+          style={{ margin: '0 10px' }}
+          onClick={() => (window.location.href = '/wishlists')}
+        >
+          Manage Wishlist
+        </button>
+        
+        <button
+          className="btn btn-primary mx-2"
+          style={{ margin: '0 10px' }}
+          onClick={() => (window.location.href = '/wishlistitems')}
+        >
+          Manage WishlistItems
+        </button>
       </div>
       <div className="mt-4">
         <h2 className="mb-4 fw-bold text-danger">Dashboard Overview</h2>

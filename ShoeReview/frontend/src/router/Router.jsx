@@ -20,6 +20,10 @@ import OrdersForm from "../views/controlpanel/Orders/OrdersForm";
 import OrdersPage from "../views/controlpanel/Orders/OrdersPage";
 import OrderItemForm from "../views/controlpanel/OrderItems/OrderItemForm";
 import OrderItemPage from "../views/controlpanel/OrderItems/OrderItemPage";
+import WishlistPage from "../views/controlpanel/Wishlist/WishlistPage";
+import WishlistForm from "../views/controlpanel/Wishlist/WishlistForm";
+import WishlistItemPage from "../views/controlpanel/WishlistItem/WishlistItemPage";
+import WishlistItemForm from "../views/controlpanel/WishlistItem/WishlistItemForm";
 
 const AppRouter = () => {
   return (
@@ -74,6 +78,15 @@ const AppRouter = () => {
         <Route path="/order-items/new" element={<OrderItemForm />} />
         <Route path="/order-items/edit/:OrderItemID" element={<OrderItemForm />} />
        
+       {/* Wishlist */} 
+       <Route path="/wishlists" element={<WishlistPage />} />
+        <Route path="/wishlists/new" element={<WishlistForm/>} />
+        <Route path="/wishlists/edit/:WishlistID" element={<WishlistForm />} />
+
+        {/* WishlistItem */} 
+       <Route path="/wishlistitems" element={<WishlistItemPage />} />
+        <Route path="/wishlistitems/new" element={<WishlistItemForm/>} />
+        <Route path="/wishlistitems/edit/:WishlistItemID" element={<WishlistItemForm />} />
         
       </Routes>
     </Router>

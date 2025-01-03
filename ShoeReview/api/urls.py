@@ -14,6 +14,8 @@ from .views.review_view import ReviewDetailView, ReviewListCreateView
 from .views.style_view import StyleDetailView, StyleListCreateView
 from .views.order_view import OrderDetailView, OrderListCreateView
 from .views.order_item_view import OrderItemDetailView, OrderItemListCreateView
+from .views.wishlist_view import WishlistDetailView, WishlistListCreateView
+from .views.wishlistitem_view import WishlistItemDetailView, WishlistItemListCreateView
 
 
 
@@ -60,5 +62,11 @@ urlpatterns = [
     path('orders/<int:pk>/', OrderDetailView.as_view(), name='order-detail'),
     path('order-items/', OrderItemListCreateView.as_view(), name='order-item-list-create'),
     path('order-items/<int:pk>/', OrderItemDetailView.as_view(), name='order-item-detail'),
+
+    # Wishlist/Wishlist Item API endpoints
+    path('wishlists/', WishlistListCreateView.as_view(), name='wishlist-list'),
+    path('wishlists/<int:pk>/', WishlistDetailView.as_view(), name='wishlist-detail'),
+    path('wishlistitems/', WishlistItemListCreateView.as_view(), name='wishlistitem-list'),
+    path('wishlistitems/<int:pk>/', WishlistItemDetailView.as_view(), name='wishlistitem-detail'),
 
 ]

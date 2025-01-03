@@ -33,7 +33,8 @@ class BrandSerializer(serializers.ModelSerializer):
 
 # WishlistItem Serializer
 class WishlistItemSerializer(serializers.ModelSerializer):
-    Shoe = ShoeSerializer(read_only=True)  # Nested Shoe details for wishlist items
+    shoe_name = serializers.ReadOnlyField(source='Shoe.name')
+    wishlist_name = serializers.ReadOnlyField(source='Wishlist.name')
 
     class Meta:
         model = WishlistItem
@@ -41,11 +42,13 @@ class WishlistItemSerializer(serializers.ModelSerializer):
 
 # Wishlist Serializer
 class WishlistSerializer(serializers.ModelSerializer):
+    username = serializers.ReadOnlyField(source='User.username')  # Add username field
     items = WishlistItemSerializer(many=True, read_only=True)  # Nested WishlistItems
 
     class Meta:
         model = Wishlist
-        fields = '__all__'
+        fields = '__all__'  # This includes all model fields + 'username'
+
 
 # OrderItem Serializer
 class OrderItemSerializer(serializers.ModelSerializer):
