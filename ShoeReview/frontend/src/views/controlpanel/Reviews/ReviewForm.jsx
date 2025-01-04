@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const ReviewForm = () => {
-  const { ReviewID } = useParams(); // Get the ID from the URL (if any)
+  const { ReviewID } = useParams(); 
   const navigate = useNavigate();
 
   const [ReviewData, setReviewData] = useState({

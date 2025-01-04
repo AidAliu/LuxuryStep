@@ -1,20 +1,35 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from ..models import Shoe
 from ..serializers import ShoeSerializer
 
 class ShoeListView(APIView):
     """
-    View për listimin dhe krijimin e këpucëve.
+    Handles listing all shoes and creating new shoes (restricted to staff users).
     """
+    permission_classes = [IsAuthenticated]  # Ensure user is authenticated
+
     def get(self, request):
-        shoes = Shoe.objects.all()
-        serializer = ShoeSerializer(shoes, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        """
+        Retrieve all shoes.
+        """
+        try:
+            shoes = Shoe.objects.all()
+            serializer = ShoeSerializer(shoes, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def post(self, request):
+        """
+        Add a new shoe (staff-only).
+        """
+        if not request.user.is_staff:  # Restrict to staff
+            return Response({'error': 'Only staff members can add shoes'}, status=status.HTTP_403_FORBIDDEN)
+
         serializer = ShoeSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
