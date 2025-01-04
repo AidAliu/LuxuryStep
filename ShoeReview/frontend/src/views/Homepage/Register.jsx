@@ -46,13 +46,25 @@ const Register = () => {
   };
 
   return (
-    <section className="register-section">
+    <section
+      className="register-section"
+      style={{
+        padding: '20px',
+        backgroundImage: 'url(/img/register.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
+        color: 'white',
+      }}
+    >
       <div className="wrapper">
-        <div className="form-box shadow">
+        <div className="form-box">
           <div className="card-body">
             <h2 className="text-center mb-4">Register</h2>
             <form onSubmit={handleSubmit}>
-
               <div className="input-box mb-3">
                 <input
                   ref={nameRef}

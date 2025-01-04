@@ -34,10 +34,39 @@ export const Services = () => {
     },
   ];
 
+  // Inline style for the section
+  const sectionStyle = {
+    backgroundImage: "url('/img/services.jpg')",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundAttachment: "fixed",
+    color: "#fff",
+    padding: "50px 0",
+    position: "relative",
+  };
+
+  // Inline style for the overlay
+  const overlayStyle = {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Faded overlay effect
+    zIndex: 1,
+  };
+
+  // Inline style for the content container
+  const containerStyle = {
+    position: "relative",
+    zIndex: 2, // Ensure content is above the overlay
+  };
+
   return (
-    <div id="services" className="text-center">
-      <div className="container">
-        <div className="section-title">
+    <div id="services" style={sectionStyle}>
+      <div style={overlayStyle}></div>
+      <div className="container text-center" style={containerStyle}>
+        <div className="section-title mb-5">
           <h2>Our Services</h2>
           <p>
             Discover premium services designed to enhance your shopping journey
@@ -45,12 +74,22 @@ export const Services = () => {
           </p>
         </div>
         <div className="row">
-          {servicesData.map((d, i) => (
-            <div key={`${d.name}-${i}`} className="col-md-4">
-              <i className={d.icon}></i>
+          {servicesData.map((service, index) => (
+            <div
+              key={`${service.name}-${index}`}
+              className="col-md-4 mb-4"
+            >
+              <i
+                className={service.icon}
+                style={{
+                  fontSize: "3rem",
+                  color: "#fff",
+                  marginBottom: "20px",
+                }}
+              ></i>
               <div className="service-desc">
-                <h3>{d.name}</h3>
-                <p>{d.text}</p>
+                <h3 style={{ fontWeight: "bold" }}>{service.name}</h3>
+                <p>{service.text}</p>
               </div>
             </div>
           ))}

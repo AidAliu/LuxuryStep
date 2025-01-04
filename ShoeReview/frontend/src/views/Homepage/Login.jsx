@@ -1,5 +1,3 @@
-// file: src/pages/Login.jsx
-
 import React, { useRef, useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
@@ -36,7 +34,6 @@ const Login = () => {
       });
       setLoading(false);
 
-   
       if (meResponse.data.is_staff) {
         navigate('/controlpanel');
       } else {
@@ -52,35 +49,57 @@ const Login = () => {
   };
 
   return (
-    <section className="login-section">
+    <section
+      className="login-section"
+      style={{
+        padding: '20px',
+        backgroundImage: 'url(/img/login.jpg)', // Background image for the login page
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
+        color: 'white',
+      }}
+    >
       <div className="wrapper">
-        <div className="form-box login">
-          <h2 className="title">
+        <div className="form-box">
+          <h2 className="text-center mb-4">
             <strong style={{ color: '#178ca4' }}>Log in</strong>
           </h2>
           <form onSubmit={handleSubmit}>
-            <div className="input-box">
+            <div className="input-box mb-3">
               <input
                 ref={usernameRef}
                 type="text"
-                name="username"
+                className="form-control"
+                id="username"
                 placeholder="Username"
                 required
               />
             </div>
-            <div className="input-box">
+
+            <div className="input-box mb-3">
               <input
                 ref={passwordRef}
                 type="password"
-                name="password"
+                className="form-control"
+                id="password"
                 placeholder="Password"
                 required
               />
             </div>
-            <button type="submit" className="submit-button">
+
+            <button type="submit" className="submit-button btn btn-primary w-100">
               {loading ? 'Loading...' : 'Login'}
             </button>
-            {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
+
+            {errorMessage && (
+              <p className="text-danger mt-3 text-center">
+                {errorMessage}
+              </p>
+            )}
           </form>
           <div className="login-register">
             <p>

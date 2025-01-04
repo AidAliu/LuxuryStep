@@ -5,75 +5,78 @@
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-}
-
-.wrapper {
-    max-width: 800px; /* Increase max-width for wider form */
+  }
+  
+  
+  .wrapper {
+    max-width: 800px; /* Increase max-width for a wider form */
     width: 35%;
     margin: 0 auto;
     text-align: center;
-}
-
-.form-box {
-    background-color: #fff;
+  }
+  
+  .form-box {
+    background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent white background */
     padding: 30px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-}
-
-.input-box {
+    border-radius: 15px; /* More rounded corners */
+    border: 2px solid rgba(255, 255, 255, 0.7); /* Semi-transparent white border */
+  }
+  
+  .input-box {
     position: relative;
     margin-bottom: 20px;
-}
-
-.input-box input {
+  }
+  
+  .input-box input {
     width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-.input-box label {
+    border-radius: 25px; /* Rounded input fields */
+  }
+  
+  .input-box label {
     position: absolute;
     left: 10px;
     top: 10px;
     color: #aaa;
     transition: all 0.3s;
-}
-
-.input-box input:focus ~ label,
-.input-box input:not(:placeholder-shown) ~ label {
+  }
+  
+  .input-box input:focus ~ label,
+  .input-box input:not(:placeholder-shown) ~ label {
     top: -15px;
     font-size: 12px;
     color: #333;
-}
-
-.icon {
+  }
+  
+  .icon {
     position: absolute;
     left: 10px;
     top: 50%;
     transform: translateY(-50%);
     color: #666;
-}
-
-.submit-button {
+  }
+  
+  .submit-button {
     background-color: #007bff;
     color: #fff;
     padding: 10px 20px;
     border: none;
-    border-radius: 4px;
+    border-radius: 25px; /* Rounded button */
     cursor: pointer;
-}
-
-.login-shift {
+  }
+  
+  .login-shift {
     margin-top: 20px;
-}
-
-.login-link a {
+  }
+  
+  .login-link a {
     color: #007bff;
     text-decoration: none;
-}
-
-.login-link a:hover {
+  }
+  
+  .login-link a:hover {
     text-decoration: underline;
-}
+  }
+  
