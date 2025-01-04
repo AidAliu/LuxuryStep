@@ -77,14 +77,17 @@ def get_control_panel_data(request):
         total_users = User.objects.count()
 
         # Example models: replace with actual models used in your project
-        from api.models import Order, Payment, Brand
+        from api.models import Order, Payment, Brand, Wishlist, WishlistItem
         total_orders = Order.objects.count()
         total_payments = Payment.objects.count()
-        total_brands = Brand.objects.count();
-        total_shoes = Shoe.objects.count();
-        total_reviews = Review.objects.count();
-        total_styles = Style.objects.count();
-        total_order_items = OrderItem.objects.count();
+        total_brands = Brand.objects.count()
+        total_shoes = Shoe.objects.count()
+        total_reviews = Review.objects.count()
+        total_styles = Style.objects.count()
+        total_order_items = OrderItem.objects.count()
+        total_wishlists = Wishlist.objects.count()
+        total_wishlist_items = WishlistItem.objects.count()
+
 
         recent_payments = Payment.objects.order_by('PaymentID')[:5]
         recent_payments_data = [
@@ -101,7 +104,9 @@ def get_control_panel_data(request):
             "total_reviews" : total_reviews,
             "total_styles" : total_styles,
             "recent_payments": recent_payments_data,
-            "total_order_items" : total_order_items
+            "total_order_items" : total_order_items,
+            "total_wishlists" : total_wishlists,
+            "total_wishlist_items" : total_wishlist_items
         }
         return Response(data)
 

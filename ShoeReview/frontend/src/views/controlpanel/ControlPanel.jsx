@@ -136,6 +136,8 @@ const ControlPanel = () => {
           <li className="list-group-item">Total Styles: {data.total_styles || 0}</li>
           <li className="list-group-item">Total Reviews: {data.total_reviews || 0}</li>
           <li className="list-group-item">Total Order Items: {data.total_order_items || 0}</li>
+          <li className="list-group-item">Total Wishlists: {data.total_wishlists || 0}</li>
+          <li className="list-group-item">Total Wishlist Items: {data.total_wishlist_items || 0}</li>
 
         </ul>
 

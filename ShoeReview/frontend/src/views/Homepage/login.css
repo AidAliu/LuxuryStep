@@ -1,54 +1,64 @@
 /* login.css */
 .login-section {
-    padding: 20px;
-    background-size: cover;
-    background-position: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    color: white;
-  }
-  
-  .wrapper {
-    max-width: 500px;
-    margin: 0 auto;
-    background-color: rgba(255, 255, 255, 0.9); /* Change transparency for a lighter box */
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  
-  .form-box {
-    background-color: transparent;
-  }
-  
-  .input-box {
-    margin-bottom: 20px;
-  }
-  
-  .input-box input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  .submit-button {
-    background-color: #178ca4;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .login-register {
-    text-align: center;
-  }
-  
-  .register-link {
-    color: #178ca4;
-  }
-  
+  padding: 20px;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  color: white;
+}
+
+.wrapper {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.form-box {
+  background-color: rgba(255, 255, 255, 0.9); /* Keep the login form solid */
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.input-box {
+  margin-bottom: 20px;
+}
+
+.input-box input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.submit-button {
+  background-color: #178ca4;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.submit-button:hover {
+  background-color: #0f6783;
+}
+
+.login-register {
+  text-align: center;
+  margin-top: 20px;
+  color: #444; /* Slightly darker for visibility */
+  font-weight: 500; /* Increased font weight */
+}
+
+.register-link {
+  color: #178ca4;
+  text-decoration: none;
+  font-weight: bold; /* Bold to enhance visibility */
+}
+
+.register-link:hover {
+  text-decoration: underline;
+}
