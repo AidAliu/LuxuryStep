@@ -1,4 +1,3 @@
-from django.forms import ValidationError
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.db import transaction
@@ -41,22 +40,15 @@ class WishlistItemSerializer(serializers.ModelSerializer):
         model = WishlistItem
         fields = '__all__'
 
-# WishlistItem Serializer
-class WishlistItemSerializer(serializers.ModelSerializer):
-    shoe_name = serializers.ReadOnlyField(source='Shoe.name')
-    shoe_description = serializers.ReadOnlyField(source='Shoe.description')
-
-    class Meta:
-        model = WishlistItem
-        fields = ['id', 'Wishlist', 'Shoe', 'shoe_name', 'shoe_description']  # Include necessary fields
-
 # Wishlist Serializer
 class WishlistSerializer(serializers.ModelSerializer):
-    items = WishlistItemSerializer(many=True, read_only=True)
+    username = serializers.ReadOnlyField(source='User.username')  # Add username field
+    items = WishlistItemSerializer(many=True, read_only=True)  # Nested WishlistItems
 
     class Meta:
         model = Wishlist
-        fields = ['id', 'User', 'name', 'items']
+        fields = '__all__'  # This includes all model fields + 'username'
+
 
 # OrderItem Serializer
 class OrderItemSerializer(serializers.ModelSerializer):
@@ -142,3 +134,9 @@ class PaymentSerializer(serializers.ModelSerializer):
             setattr(instance, attr, value)
         instance.save()
         return instance
+
+
+
+
+
+

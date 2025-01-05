@@ -44,3 +44,5 @@ class WishlistItemDetailView(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except WishlistItem.DoesNotExist:
             return Response({'error': 'WishlistItem not found'}, status=status.HTTP_404_NOT_FOUND)
+
+

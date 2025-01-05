@@ -10,12 +10,14 @@ from .views.user_view import (
 from .views.payment_view import PaymentListCreateView, PaymentDetailView
 from .views.shoe_view import ShoeListView, ShoeDetailView
 from .views.brand_view import BrandDetailView, BrandListCreateView
-from .views.review_view import ReviewDetailView, ReviewListCreateView
+from .views.review_view import ReviewDetailView, ReviewListCreateView, ShoeReviewsView
 from .views.style_view import StyleDetailView, StyleListCreateView
 from .views.order_view import OrderDetailView, OrderListCreateView
 from .views.order_item_view import OrderItemDetailView, OrderItemListCreateView
 from .views.wishlist_view import WishlistDetailView, WishlistListCreateView
 from .views.wishlistitem_view import WishlistItemDetailView, WishlistItemListCreateView
+from django.conf import settings
+from django.conf.urls.static import static
 
 
 
@@ -52,6 +54,8 @@ urlpatterns = [
     # Review API endpoints
     path('reviews/', ReviewListCreateView.as_view(), name='review-list'),
     path('reviews/<int:pk>/', ReviewDetailView.as_view(), name='review-detail'),
+    path('shoes/<int:shoe_id>/reviews/', ShoeReviewsView.as_view(), name='shoe-reviews'),
+
 
     # Style API endpoints
     path('styles/', StyleListCreateView.as_view(), name='style-list'),
@@ -66,7 +70,16 @@ urlpatterns = [
     # Wishlist/Wishlist Item API endpoints
     path('wishlists/', WishlistListCreateView.as_view(), name='wishlist-list'),
     path('wishlists/<int:pk>/', WishlistDetailView.as_view(), name='wishlist-detail'),
-    path('wishlists/items/', WishlistItemListCreateView.as_view(), name='wishlist-items'),
+    path('wishlistitems/', WishlistItemListCreateView.as_view(), name='wishlistitem-list'),
     path('wishlistitems/<int:pk>/', WishlistItemDetailView.as_view(), name='wishlistitem-detail'),
 
 ]
+
+if settings.DEBUG:  # Only serve media in development
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+
+
+
+
