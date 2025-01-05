@@ -1,0 +1,73 @@
+.shoe-card {
+    text-align: center;
+    position: relative;
+  }
+  
+  .shoe-image {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+  }
+  
+  .shoe-image img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    transition: 0.3s ease;
+  }
+  
+  .shoe-image .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.6); /* Dark overlay */
+    opacity: 0;
+    transition: 0.3s ease;
+  }
+  
+  .shoe-image:hover img {
+    opacity: 0.6; /* Fades the image */
+  }
+  
+  .shoe-image:hover .overlay {
+    opacity: 1; /* Makes the overlay visible */
+  }
+  
+  .overlay button {
+    margin: 5px 0;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .overlay button:hover {
+    background-color: #003268; 
+  }
+  
+  .overlay .btn-secondary {
+    background-color: #797d6c;
+  }
+  
+  .overlay .btn-secondary:hover {
+    background-color: #474b4e;
+  }
+  
+  .overlay .btn-success {
+    background-color: #930505;
+  }
+  
+  .overlay .btn-success:hover {
+    background-color: #651010;
+  }
+  

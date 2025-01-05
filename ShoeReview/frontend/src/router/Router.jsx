@@ -1,8 +1,8 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Homepage from "../views/Homepage/Homepage";
-import Login from "../views/Homepage/Login";
-import Register from "../views/Homepage/Register";
+import Login from "../views/Homepage/Registration/Login";
+import Register from "../views/Homepage/Registration/Register";
 import ControlPanel from "../views/controlpanel/ControlPanel";
 import PaymentsPage from "../views/controlpanel/Payments/PaymentsPage"; 
 import PaymentsForm from "../views/controlpanel/Payments/PaymentsForm";
@@ -24,7 +24,10 @@ import WishlistPage from "../views/controlpanel/Wishlist/WishlistPage";
 import WishlistForm from "../views/controlpanel/Wishlist/WishlistForm";
 import WishlistItemPage from "../views/controlpanel/WishlistItem/WishlistItemPage";
 import WishlistItemForm from "../views/controlpanel/WishlistItem/WishlistItemForm";
-import ReviewShoe from "../views/Homepage/ReviewShoe";
+
+import ReviewShoe from "../views/Homepage/Gallery/ReviewShoe";
+import PurchaseShoe from "../views/Homepage/Gallery/PurchaseShoe";
+import Wishlist from "../views/Homepage/Gallery/Wishlist";
 
 const AppRouter = () => {
   return (
@@ -89,7 +92,11 @@ const AppRouter = () => {
         <Route path="/wishlistitems/new" element={<WishlistItemForm/>} />
         <Route path="/wishlistitems/edit/:WishlistItemID" element={<WishlistItemForm />} />
         
+        {/* Gallery Elements */}
         <Route path="/reviewshoe/:ShoeID" element={<ReviewShoe/>} />
+        <Route path="/purchaseshoe/:ShoeID" element={<PurchaseShoe/>} />
+        <Route path="/addtowishlist/:ShoeID" element={<Wishlist/>} />
+
       </Routes>
     </Router>
   );

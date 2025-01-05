@@ -15,8 +15,8 @@ const Homepage = () => {
         <Header />
         <Gallery />
         <Features />
-        <About />
         <Services />
+        <About />
         <Contact />
       </div>
     );

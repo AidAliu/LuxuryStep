@@ -8,10 +8,12 @@ const ReviewShoe = () => {
 
   const [rating, setRating] = useState("");
   const [comment, setComment] = useState("");
-  const [reviews, setReviews] = useState([]); // State to store reviews
+  const [reviews, setReviews] = useState([]);
   const [error, setError] = useState(null);
 
-  // Fetch reviews on component mount
+  // Check if the user is logged in
+  const isLoggedIn = localStorage.getItem("accessToken");
+
   useEffect(() => {
     const fetchReviews = async () => {
       try {
@@ -29,9 +31,9 @@ const ReviewShoe = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const token = localStorage.getItem("accessToken");
-    if (!token) {
-      alert("No access token found.");
+    if (!isLoggedIn) {
+      alert("You need to be logged in to leave a review!");
+      navigate("/login");
       return;
     }
 
@@ -43,14 +45,12 @@ const ReviewShoe = () => {
       };
 
       await axios.post(`http://127.0.0.1:8000/api/reviews/`, payload, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
       });
       alert("Review created successfully!");
 
-      // Refresh the reviews after successful submission
       const response = await axios.get(`http://127.0.0.1:8000/api/shoes/${ShoeID}/reviews/`);
       setReviews(response.data);
-
     } catch (err) {
       console.error("Error saving Review:", err);
       setError(err.response?.data?.error || "An error occurred while submitting the review.");
@@ -63,9 +63,7 @@ const ReviewShoe = () => {
       {error && <p className="text-danger">{error}</p>}
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="rating" className="form-label">
-            Rating
-          </label>
+          <label htmlFor="rating" className="form-label">Rating</label>
           <select
             className="form-control"
             id="rating"
@@ -76,9 +74,7 @@ const ReviewShoe = () => {
           >
             <option value="">Select</option>
             {[1, 2, 3, 4, 5].map((num) => (
-              <option key={num} value={num}>
-                {num}
-              </option>
+              <option key={num} value={num}>{num}</option>
             ))}
           </select>
         </div>
@@ -94,9 +90,7 @@ const ReviewShoe = () => {
             required
           />
         </div>
-        <button type="submit" className="btn btn-primary">
-          Submit review
-        </button>
+        <button type="submit" className="btn btn-primary">Submit review</button>
       </form>
 
       <div className="mt-5">
@@ -123,9 +117,7 @@ const ReviewShoe = () => {
         </div>
       </div>
     </div>
-    
   );
-  
 };
 
 export default ReviewShoe;

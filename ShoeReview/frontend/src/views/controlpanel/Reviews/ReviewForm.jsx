@@ -21,7 +21,7 @@ const ReviewForm = () => {
     const fetchShoes = async () => {
       try {
         const response = await axios.get("http://127.0.0.1:8000/api/shoes/");
-        setShoes(response.data); // Assuming the API returns an array of shoes
+        setShoes(response.data); 
       } catch (err) {
         console.error("Error fetching shoes:", err);
         setError("Failed to load shoes");
@@ -76,7 +76,7 @@ const ReviewForm = () => {
       setLoading(true);
 
       const payload = {
-        Shoe: ReviewData.Shoe, // Ensure this is an ID
+        Shoe: ReviewData.Shoe, 
         rating: ReviewData.rating,
         comment: ReviewData.comment
       };
@@ -95,7 +95,7 @@ const ReviewForm = () => {
         alert("Review created successfully!");
       }
 
-      navigate("/reviews"); // Redirect to Reviews list
+      navigate("/reviews"); 
     } catch (err) {
       console.error("Error saving Review:", err);
       setError(err.response?.data?.error || "An error occurred while submitting the review.");
@@ -124,7 +124,7 @@ const ReviewForm = () => {
             <option value="">Select a Shoe</option>
             {shoes.map((shoe) => (
               <option key={shoe.ShoeID} value={shoe.ShoeID}>
-                {shoe.name} {/* Adjust based on the shoe object's properties */}
+                {shoe.name} {}
               </option>
             ))}
           </select>
