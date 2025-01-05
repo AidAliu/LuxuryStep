@@ -16,6 +16,8 @@ from .views.order_view import OrderDetailView, OrderListCreateView
 from .views.order_item_view import OrderItemDetailView, OrderItemListCreateView
 from .views.wishlist_view import WishlistDetailView, WishlistListCreateView
 from .views.wishlistitem_view import WishlistItemDetailView, WishlistItemListCreateView
+from django.conf import settings
+from django.conf.urls.static import static
 
 
 
@@ -70,3 +72,6 @@ urlpatterns = [
     path('wishlistitems/<int:pk>/', WishlistItemDetailView.as_view(), name='wishlistitem-detail'),
 
 ]
+
+if settings.DEBUG:  # Only serve media in development
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

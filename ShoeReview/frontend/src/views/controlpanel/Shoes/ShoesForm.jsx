@@ -10,14 +10,13 @@ const ShoesForm = () => {
     name: "",
     BrandID: "",
     StyleID: "",
-    CategoryID: "",
     price: "",
     size: "",
     stock: "",
     description: "",
-    image_url: "",
   });
 
+  const [imageFile, setImageFile] = useState(null); // State to store the uploaded file
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -34,7 +33,7 @@ const ShoesForm = () => {
         setLoading(true);
         try {
           const response = await axios.get(
-            `http://127.0.0.1:8000/api/shoes/${ShoeID}`,
+            `http://127.0.0.1:8000/api/shoes/${ShoeID}/`,
             { headers: { Authorization: `Bearer ${token}` } }
           );
           const shoe = response.data;
@@ -46,7 +45,6 @@ const ShoesForm = () => {
             size: shoe.size || "",
             stock: shoe.stock || "",
             description: shoe.description || "",
-            image_url: shoe.image_url || "",
           });
         } catch (err) {
           console.error("Error fetching shoe details:", err);
@@ -64,6 +62,10 @@ const ShoesForm = () => {
     setShoeData((prevData) => ({ ...prevData, [name]: value }));
   };
 
+  const handleFileChange = (e) => {
+    setImageFile(e.target.files[0]); // Store the selected file
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -73,6 +75,19 @@ const ShoesForm = () => {
       return;
     }
 
+    const formData = new FormData();
+    formData.append("name", shoeData.name);
+    formData.append("BrandID", shoeData.BrandID);
+    formData.append("StyleID", shoeData.StyleID);
+    formData.append("price", shoeData.price);
+    formData.append("size", shoeData.size);
+    formData.append("stock", shoeData.stock);
+    formData.append("description", shoeData.description);
+
+    if (imageFile) {
+      formData.append("image_url", imageFile); // Attach the image file
+    }
+
     try {
       setLoading(true);
 
@@ -80,14 +95,22 @@ const ShoesForm = () => {
         // Update existing shoe
         await axios.put(
           `http://127.0.0.1:8000/api/shoes/${ShoeID}/`,
-          shoeData,
-          { headers: { Authorization: `Bearer ${token}` } }
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
         );
         alert("Shoe updated successfully!");
       } else {
         // Create new shoe
-        await axios.post(`http://127.0.0.1:8000/api/shoes/`, shoeData, {
-          headers: { Authorization: `Bearer ${token}` },
+        await axios.post(`http://127.0.0.1:8000/api/shoes/`, formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
         });
         alert("Shoe created successfully!");
       }
@@ -197,15 +220,13 @@ const ShoesForm = () => {
           />
         </div>
         <div className="form-group">
-          <label htmlFor="image_url">Image URL</label>
+          <label htmlFor="image_url">Image</label>
           <input
-            type="text"
+            type="file"
             className="form-control"
             id="image_url"
             name="image_url"
-            value={shoeData.image_url}
-            onChange={handleChange}
-            required
+            onChange={handleFileChange} 
           />
         </div>
         <button type="submit" className="btn btn-primary">

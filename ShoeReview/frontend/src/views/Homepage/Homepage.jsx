@@ -13,10 +13,10 @@ const Homepage = () => {
       <div>
         <Navigation />
         <Header />
+        <Gallery />
         <Features />
         <About />
         <Services />
-        <Gallery />
         <Contact />
       </div>
     );

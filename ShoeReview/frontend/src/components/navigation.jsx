@@ -72,6 +72,15 @@ export const Navigation = () => {
           >
             <li>
               <a
+                href="#portfolio"
+                className="page-scroll"
+                style={{ padding: "10px 15px" }}
+              >
+                Gallery
+              </a>
+            </li>
+            <li>
+              <a
                 href="#features"
                 className="page-scroll"
                 style={{ padding: "10px 15px" }}
@@ -95,15 +104,6 @@ export const Navigation = () => {
                 style={{ padding: "10px 15px" }}
               >
                 Services
-              </a>
-            </li>
-            <li>
-              <a
-                href="#portfolio"
-                className="page-scroll"
-                style={{ padding: "10px 15px" }}
-              >
-                Gallery
               </a>
             </li>
             <li>

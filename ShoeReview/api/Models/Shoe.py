@@ -11,7 +11,7 @@ class Shoe(models.Model):
     size = models.FloatField()
     stock = models.PositiveIntegerField()
     description = models.TextField()
-    image_url = models.URLField()
+    image_url = models.ImageField(upload_to='images/')
 
     def __str__(self):
         return self.name

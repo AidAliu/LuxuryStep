@@ -1,7 +1,7 @@
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from ..models import Shoe
 from ..serializers import ShoeSerializer
@@ -10,7 +10,16 @@ class ShoeListView(APIView):
     """
     Handles listing all shoes and creating new shoes (restricted to staff users).
     """
-    permission_classes = [IsAuthenticated]  # Ensure user is authenticated
+
+    def get_permissions(self):
+        """
+        Define permissions based on the HTTP method.
+        - Allow anyone to access the `GET` method.
+        - Restrict `POST` to authenticated users.
+        """
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
     def get(self, request):
         """
@@ -39,8 +48,11 @@ class ShoeListView(APIView):
 
 class ShoeDetailView(APIView):
     """
-    View për marrjen, përditësimin dhe fshirjen e një këpuce të veçantë.
+    Handles operations on a single shoe: retrieve, update, delete.
     """
+
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, pk):
         shoe = get_object_or_404(Shoe, pk=pk)
         serializer = ShoeSerializer(shoe)
