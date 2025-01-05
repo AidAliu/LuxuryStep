@@ -24,6 +24,7 @@ import WishlistPage from "../views/controlpanel/Wishlist/WishlistPage";
 import WishlistForm from "../views/controlpanel/Wishlist/WishlistForm";
 import WishlistItemPage from "../views/controlpanel/WishlistItem/WishlistItemPage";
 import WishlistItemForm from "../views/controlpanel/WishlistItem/WishlistItemForm";
+import ReviewShoe from "../views/Homepage/ReviewShoe";
 
 const AppRouter = () => {
   return (
@@ -88,6 +89,7 @@ const AppRouter = () => {
         <Route path="/wishlistitems/new" element={<WishlistItemForm/>} />
         <Route path="/wishlistitems/edit/:WishlistItemID" element={<WishlistItemForm />} />
         
+        <Route path="/reviewshoe/:ShoeID" element={<ReviewShoe/>} />
       </Routes>
     </Router>
   );

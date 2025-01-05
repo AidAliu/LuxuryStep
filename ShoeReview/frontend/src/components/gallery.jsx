@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 export const Gallery = (props) => {
   const [shoes, setShoes] = useState([]); // State to store shoe data
-
+  const navigate = useNavigate();
   // Fetch shoes from the backend API
   useEffect(() => {
     axios
@@ -11,6 +12,10 @@ export const Gallery = (props) => {
       .then((response) => setShoes(response.data))
       .catch((error) => console.error("Error fetching shoes:", error));
   }, []);
+
+  const handleReview = (ShoeID) => {
+    navigate(`/reviewshoe/${ShoeID}`);
+  };
 
   return (
     <div id="portfolio" className="text-center">
@@ -60,6 +65,12 @@ export const Gallery = (props) => {
                   <p style={{ fontWeight: "bold", color: "#000" }}>
                     Price: ${shoe.price}
                   </p>
+                  <buton
+                  className="btn btn-primary mx-2"
+                  onClick={() => handleReview(shoe.ShoeID)}
+                  >
+                    Review
+                  </buton>
                 </div>
               </div>
             ))}

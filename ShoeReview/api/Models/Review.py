@@ -9,5 +9,8 @@ class Review(models.Model):
     rating = models.PositiveIntegerField()  # Ensure rating is non-negative
     comment = models.TextField(blank=True)  # Allow comments to be optional
 
+    class Meta:
+        unique_together = ('User', 'Shoe')  # Enforce uniqueness at the database level
+
     def __str__(self):
         return f"{self.User.username}'s review of {self.Shoe.name}"

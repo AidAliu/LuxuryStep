@@ -13,13 +13,21 @@ class ReviewListCreateView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        # Pass the request context to the serializer
+        user = request.user
+        shoe_id = request.data.get('Shoe')
+
+        # Check if the user has already reviewed this shoe
+        if Review.objects.filter(User=user, Shoe_id=shoe_id).exists():
+            return Response(
+                {"error": "You have already reviewed this shoe."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         serializer = ReviewSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class ReviewDetailView(APIView):
     def get(self, request, pk):
@@ -49,3 +57,11 @@ class ReviewDetailView(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Review.DoesNotExist:
             return Response({'error': 'Review not found'}, status=status.HTTP_404_NOT_FOUND)
+
+class ShoeReviewsView(APIView):
+    def get(self, request, shoe_id):
+        # Match the model's field name (`ShoeID`)
+        reviews = Review.objects.filter(Shoe__ShoeID=shoe_id)
+        serializer = ReviewSerializer(reviews, many=True)
+        return Response(serializer.data)
+

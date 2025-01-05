@@ -91,7 +91,7 @@ const ReviewPage = () => {
             {Reviews.map((Review) => (
               <tr key={Review.ReviewID}>
                 <td>{Review.ReviewID}</td>
-                <td>{Review.User?.id || "Unknown User"}</td>
+                <td>{Review.User?.username || "Unknown User"}</td>
                 <td>{Review.Shoe}</td>
                 <td>{Review.rating}</td>
                 <td>{Review.comment}</td>

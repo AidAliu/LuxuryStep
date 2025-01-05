@@ -107,8 +107,13 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def create(self, validated_data):
-        # Automatically set the User as the authenticated user
         user = self.context['request'].user
+        shoe = validated_data['Shoe']
+
+        # Check if the user has already reviewed this shoe
+        if Review.objects.filter(User=user, Shoe=shoe).exists():
+            raise ValidationError("You have already reviewed this shoe.")
+
         return Review.objects.create(User=user, **validated_data)
 
 

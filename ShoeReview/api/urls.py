@@ -10,7 +10,7 @@ from .views.user_view import (
 from .views.payment_view import PaymentListCreateView, PaymentDetailView
 from .views.shoe_view import ShoeListView, ShoeDetailView
 from .views.brand_view import BrandDetailView, BrandListCreateView
-from .views.review_view import ReviewDetailView, ReviewListCreateView
+from .views.review_view import ReviewDetailView, ReviewListCreateView, ShoeReviewsView
 from .views.style_view import StyleDetailView, StyleListCreateView
 from .views.order_view import OrderDetailView, OrderListCreateView
 from .views.order_item_view import OrderItemDetailView, OrderItemListCreateView
@@ -54,6 +54,8 @@ urlpatterns = [
     # Review API endpoints
     path('reviews/', ReviewListCreateView.as_view(), name='review-list'),
     path('reviews/<int:pk>/', ReviewDetailView.as_view(), name='review-detail'),
+    path('shoes/<int:shoe_id>/reviews/', ShoeReviewsView.as_view(), name='shoe-reviews'),
+
 
     # Style API endpoints
     path('styles/', StyleListCreateView.as_view(), name='style-list'),

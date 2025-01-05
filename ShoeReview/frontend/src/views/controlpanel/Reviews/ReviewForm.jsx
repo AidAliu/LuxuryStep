@@ -3,8 +3,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const ReviewForm = () => {
-  const { ReviewID } = useParams(); 
+  const { ReviewID } = useParams();
   const navigate = useNavigate();
+  const [shoes, setShoes] = useState([]);
 
   const [ReviewData, setReviewData] = useState({
     Shoe: "",
@@ -14,6 +15,20 @@ const ReviewForm = () => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Fetch all shoes
+  useEffect(() => {
+    const fetchShoes = async () => {
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/api/shoes/");
+        setShoes(response.data); // Assuming the API returns an array of shoes
+      } catch (err) {
+        console.error("Error fetching shoes:", err);
+        setError("Failed to load shoes");
+      }
+    };
+    fetchShoes();
+  }, []);
 
   // Fetch existing Review data if ReviewID is present
   useEffect(() => {
@@ -50,22 +65,22 @@ const ReviewForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     const token = localStorage.getItem("accessToken");
     if (!token) {
       alert("No access token found.");
       return;
     }
-  
+
     try {
       setLoading(true);
-  
+
       const payload = {
         Shoe: ReviewData.Shoe, // Ensure this is an ID
         rating: ReviewData.rating,
-        comment: ReviewData.comment,
+        comment: ReviewData.comment
       };
-  
+
       if (ReviewID) {
         await axios.put(
           `http://127.0.0.1:8000/api/reviews/${ReviewID}/`,
@@ -75,15 +90,15 @@ const ReviewForm = () => {
         alert("Review updated successfully!");
       } else {
         await axios.post(`http://127.0.0.1:8000/api/reviews/`, payload, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}` }
         });
         alert("Review created successfully!");
       }
-  
+
       navigate("/reviews"); // Redirect to Reviews list
     } catch (err) {
       console.error("Error saving Review:", err);
-      setError("Failed to save Review");
+      setError(err.response?.data?.error || "An error occurred while submitting the review.");
     } finally {
       setLoading(false);
     }
@@ -96,21 +111,26 @@ const ReviewForm = () => {
     <div className="container">
       <h1>{ReviewID ? "Edit Review" : "Create Review"}</h1>
       <form onSubmit={handleSubmit}>
-       
         <div className="form-group">
-          <label htmlFor="description">Shoe</label>
-          <input
-            type="number"
+          <label htmlFor="Shoe">Shoe</label>
+          <select
             className="form-control"
             id="Shoe"
             name="Shoe"
-            value={ReviewData.Shoe.ShoeID}
+            value={ReviewData.Shoe}
             onChange={handleChange}
             required
-          />
+          >
+            <option value="">Select a Shoe</option>
+            {shoes.map((shoe) => (
+              <option key={shoe.ShoeID} value={shoe.ShoeID}>
+                {shoe.name} {/* Adjust based on the shoe object's properties */}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="form-group">
-          <label htmlFor="website_url">Rating</label>
+          <label htmlFor="rating">Rating</label>
           <input
             type="number"
             className="form-control"
@@ -122,7 +142,7 @@ const ReviewForm = () => {
           />
         </div>
         <div className="form-group">
-          <label htmlFor="website_url">Comment</label>
+          <label htmlFor="comment">Comment</label>
           <input
             type="text"
             className="form-control"
