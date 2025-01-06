@@ -35,6 +35,11 @@ class BrandSerializer(serializers.ModelSerializer):
 class WishlistItemSerializer(serializers.ModelSerializer):
     shoe_name = serializers.ReadOnlyField(source='Shoe.name')
     wishlist_name = serializers.ReadOnlyField(source='Wishlist.name')
+    price = serializers.ReadOnlyField(source='Shoe.price')
+    size = serializers.ReadOnlyField(source='Shoe.size')
+    description = serializers.ReadOnlyField(source='Shoe.description')
+    stock = serializers.ReadOnlyField(source='Shoe.stock')
+    image_url = serializers.ReadOnlyField(source='Shoe.image_url.url')
 
     class Meta:
         model = WishlistItem

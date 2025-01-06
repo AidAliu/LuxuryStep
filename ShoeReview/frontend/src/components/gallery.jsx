@@ -38,7 +38,7 @@ export const Gallery = () => {
       navigate("/login");
     } else {
       console.log(`Wishlist button clicked for Shoe ID: ${ShoeID}`);
-      navigate(`/addtowishlist/${ShoeID}`);
+      navigate(`/${ShoeID}`);
     }
   };
 

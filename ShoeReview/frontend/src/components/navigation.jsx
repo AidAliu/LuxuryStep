@@ -119,6 +119,18 @@ export const Navigation = () => {
             {/* If user is logged in -> Show username & logout. Otherwise -> Show LOGIN / REGISTER. */}
             {user ? (
               <>
+              <li>
+              <a
+                className="page-scroll"
+                style={{ padding: "10px 15px" }}
+              >
+                <Link
+                style={{color: "grey"}}
+                  to="/addtowishlist">
+                Wishlist
+                </Link>
+              </a>
+            </li>
                 <div style={{ display: "flex", gap: "10px", marginLeft: "20px" }}>
                   <span>Hello, {user.username}</span>
                   <button
@@ -185,6 +197,7 @@ export const Navigation = () => {
                 >
                   REGISTER
                 </Link>
+                
               </div>
             )}
           </ul>
