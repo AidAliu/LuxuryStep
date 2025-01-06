@@ -77,6 +77,14 @@ const ReviewShoe = () => {
     }
   };
 
+  // Calculate average rating
+  const calculateAverageRating = () => {
+    if (reviews.length === 0) return 0;
+
+    const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+    return (totalRating / reviews.length).toFixed(1);
+  };
+
   return (
     <div className="container">
       <h1 className="text-center my-4">Review Shoe</h1>
@@ -85,7 +93,7 @@ const ReviewShoe = () => {
       {shoe && (
         <div className="text-center mb-4">
           <img
-            src={shoe.image_url || "http://127.0.0.1:8000/media/default_image.jpg"}
+            src={shoe.image_url.startsWith("/media/") ? `http://127.0.0.1:8000${shoe.image_url}` : `http://127.0.0.1:8000/media/${shoe.image_url}`}
             alt={shoe.name || "Shoe Image"}
             className="img-fluid rounded"
             style={{ maxWidth: "300px", maxHeight: "300px", objectFit: "cover" }}
@@ -95,10 +103,11 @@ const ReviewShoe = () => {
         </div>
       )}
 
+      {/* Rating Section (First) */}
       <form onSubmit={handleSubmit}>
         <div className="text-center mb-3">
           <label htmlFor="rating" className="form-label">
-            Rating:
+            Rate:
           </label>
           <div>
             {[1, 2, 3, 4, 5].map((star) => (
@@ -132,7 +141,22 @@ const ReviewShoe = () => {
         </button>
       </form>
 
-      <div className="mt-5">
+      {/* Average Rating Section (Below the form and smaller) */}
+      <div className="text-center mb-4 mt-6" style={{ fontSize: "0.9em" }}>
+        <h3>Average Rating:</h3>
+        <div>
+          {[1, 2, 3, 4, 5].map((star) => (
+            <FaStar
+              key={star}
+              size={25}
+              color={star <= calculateAverageRating() ? "#ffc107" : "#e4e5e9"}
+            />
+          ))}
+        </div>
+        <p>{calculateAverageRating()} out of 5</p>
+      </div>
+
+      <div className="mt-3">
         <h2>Reviews</h2>
         {reviews.length === 0 ? (
           <p>No reviews yet. Be the first to leave a review!</p>

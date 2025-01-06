@@ -1,30 +1,28 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import "./css/wishlist.css"; // Make sure to use a new stylesheet for Wishlist
 
 const Wishlist = () => {
-  const [wishlistItems, setWishlistItems] = useState([]); // State to hold the items in the wishlist
+  const [wishlistItems, setWishlistItems] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate(); // Hook for navigation
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchWishlistItems = async () => {
       try {
         const token = localStorage.getItem("accessToken");
-        if (!token) {
-          setError("You must be logged in to view your wishlist.");
-          return;
-        }
+        if (!token) throw new Error("You must be logged in to view your wishlist.");
 
         const response = await axios.get("http://127.0.0.1:8000/api/wishlistitems/", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        setWishlistItems(response.data); // Set the wishlist items
+        setWishlistItems(response.data);
       } catch (err) {
         console.error("Error fetching wishlist:", err);
-        setError("Failed to fetch wishlist. Please try again later.");
+        setError(err.response?.data?.detail || "Failed to fetch wishlist. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -33,62 +31,76 @@ const Wishlist = () => {
     fetchWishlistItems();
   }, []);
 
+  const handleDelete = async (itemId) => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) throw new Error("You must be logged in to delete items.");
+
+      await axios.delete(`http://127.0.0.1:8000/api/wishlistitems/${itemId}/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setWishlistItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
+    } catch (err) {
+      console.error("Error deleting item:", err);
+      setError(err.response?.data?.detail || "Failed to delete item. Please try again.");
+    }
+  };
+
+  const handleOrder = (itemId) => {
+    console.log("Order button clicked for Item ID:", itemId);
+    navigate(`/order/${itemId}`);
+  };
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p className="text-danger">{error}</p>;
 
   return (
-    <div className="container mt-5">
+    <div className="wishlist-container mt-5">
       <h2 className="text-center mb-4">Your Wishlist</h2>
       {wishlistItems.length > 0 ? (
-        <div className="row">
-          {wishlistItems.map((item, index) => {
-            const key = item.id || `${index}`;
+        <div className="wishlist-items row">
+          {wishlistItems.map((item) => {
             const imageUrl = item.image_url
-              ? item.image_url.startsWith("/media/")
-                ? `http://127.0.0.1:8000${item.image_url}`
-                : `http://127.0.0.1:8000/media/${item.image_url}`
-              : "http://127.0.0.1:8000/media/default_image.jpg"; // Fallback for missing image
+              ? `http://127.0.0.1:8000${item.image_url}`
+              : "http://127.0.0.1:8000/media/default_image.jpg";
 
             return (
-              <div key={key} className="col-lg-6 col-md-6 col-sm-12 mb-4">
-                <div
-                  className="card border rounded shadow-sm p-3"
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: "1rem",
-                  }}
-                >
-                  {/* Image Section */}
-                  <div className="image-container" style={{ flex: "1 1 auto" }}>
+              <div key={item.id} className="wishlist-item col-lg-4 col-md-6 col-sm-12 mb-4">
+                <div className="wishlist-shoe-card">
+                  <div className="wishlist-shoe-image">
                     <img
                       src={imageUrl}
                       alt={item.shoe_name || "No Name Available"}
-                      className="img-fluid rounded"
+                      className="card-img-top"
                       style={{
-                        maxWidth: "150px",
-                        maxHeight: "150px",
+                        maxHeight: "200px",
                         objectFit: "cover",
-                        border: "1px solid #ddd",
+                        borderBottom: "1px solid #ddd",
                       }}
                     />
+                    <div className="wishlist-overlay">
+                      <button
+                        className="btn btn-danger"
+                        onClick={() => handleDelete(item.id)}
+                      >
+                        Remove Item
+                      </button>
+                      <button
+                        className="btn btn-primary mx-2"
+                        onClick={() => handleOrder(item.id)}
+                      >
+                        Order
+                      </button>
+                    </div>
                   </div>
-
-                  {/* Text Section */}
-                  <div className="details-container" style={{ flex: "2 1 auto" }}>
-                    <h5 className="card-title text-dark mb-2">{item.shoe_name}</h5>
-                    <p className="mb-1">
-                      <strong>Price:</strong> ${item.price || "N/A"}
-                    </p>
-                    <p className="mb-1">
-                      <strong>Size:</strong> {item.size || "N/A"}
-                    </p>
-                    <p className="mb-1">
-                      <strong>Stock:</strong> {item.stock || "Out of stock"}
-                    </p>
-                    <p className="text-muted mb-0" style={{ fontSize: "0.9rem" }}>
-                      {item.description || "No description available"}
+                  <div className="card-body">
+                    <h5 className="card-title">{item.shoe_name}</h5>
+                    <p className="card-text">
+                      <strong>Price:</strong> ${item.price || "N/A"} <br />
+                      <strong>Size:</strong> {item.size || "N/A"} <br />
+                      <strong>Stock:</strong> {item.stock || "Out of stock"} <br />
+                      <strong>Description:</strong> {item.description || "No description available"}
                     </p>
                   </div>
                 </div>
@@ -99,12 +111,6 @@ const Wishlist = () => {
       ) : (
         <div className="text-center">
           <div className="alert alert-info">Your wishlist is empty.</div>
-          <button
-            className="btn btn-primary mt-3"
-            onClick={() => navigate("/gallery")} // Redirect to gallery
-          >
-            Return to Gallery
-          </button>
         </div>
       )}
     </div>

@@ -3,10 +3,10 @@ import { useLocation, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 
 export const Navigation = () => {
-  // Hooks at the top (same order on every render)
   const location = useLocation();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [isHovered, setIsHovered] = useState(false);
 
   // Fetch user data if there's a token
   useEffect(() => {
@@ -41,7 +41,11 @@ export const Navigation = () => {
     <nav
       id="menu"
       className="navbar navbar-default navbar-fixed-top"
-      style={{ minHeight: "50px" }}
+      style={{
+        minHeight: "50px",
+        marginLeft: "0px",
+        marginRight: "0px", 
+      }}
     >
       <div
         className="container"
@@ -49,7 +53,7 @@ export const Navigation = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "0",
+          padding: "0 0px",
         }}
       >
         <a
@@ -57,7 +61,7 @@ export const Navigation = () => {
           href="#page-top"
           style={{
             margin: 0,
-            padding: "10px 0",
+            padding: "14px 0",
             fontWeight: "600",
             letterSpacing: "0.5px",
           }}
@@ -116,23 +120,59 @@ export const Navigation = () => {
               </a>
             </li>
 
+            {/* New Cart Link with only Bootstrap Shopping Cart Icon */}
+            <li>
+              <Link
+                to="/cart"
+                className="page-scroll"
+                style={{
+                  padding: "10px 15px",
+                  fontSize: "20px", // Larger font for cart icon
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <i
+                  className="bi bi-cart-fill"
+                  onMouseEnter={() => setIsHovered(true)}  // Set hover state to true
+                  onMouseLeave={() => setIsHovered(false)}
+                  style={{
+                    fontSize: "24px",
+                    color: isHovered ? "orange" : "#333", // Heart turns white when hovered
+                    padding: "10px", // Add more padding for oval effect
+                    transition: "color 0.3s ease, background-color 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease", // Smooth transition
+                  }}
+                ></i>
+              </Link>
+            </li>
+
             {/* If user is logged in -> Show username & logout. Otherwise -> Show LOGIN / REGISTER. */}
             {user ? (
               <>
-              <li>
-              <a
-                className="page-scroll"
-                style={{ padding: "10px 15px" }}
-              >
-                <Link
-                style={{color: "grey"}}
-                  to="/addtowishlist">
-                Cart
-                </Link>
-              </a>
-            </li>
+                <li>
+                  <a
+                    className="page-scroll"
+                    style={{ padding: "10px 15px" }}
+                  >
+                    <Link
+                      style={{ color: "grey" }}
+                      to="/addtowishlist"
+                    >
+                      <i
+                        className="bi bi-heart"
+                        onMouseEnter={() => setIsHovered(true)}  // Set hover state to true
+                        onMouseLeave={() => setIsHovered(false)} // Set hover state to false
+                        style={{
+                          fontSize: "24px",
+                          color: isHovered ? "red" : "#333", // Heart turns white when hovered
+                          padding: "10px", // Add more padding for oval effect
+                          transition: "color 0.3s ease, background-color 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease", // Smooth transition
+                        }}
+                      ></i>
+                    </Link>
+                  </a>
+                </li>
                 <div style={{ display: "flex", gap: "10px", marginLeft: "20px" }}>
-                  <span>Hello, {user.username}</span>
                   <button
                     onClick={handleLogout}
                     style={{
@@ -197,7 +237,6 @@ export const Navigation = () => {
                 >
                   REGISTER
                 </Link>
-                
               </div>
             )}
           </ul>
