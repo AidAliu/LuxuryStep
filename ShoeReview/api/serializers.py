@@ -33,6 +33,7 @@ class BrandSerializer(serializers.ModelSerializer):
 
 # WishlistItem Serializer
 class WishlistItemSerializer(serializers.ModelSerializer):
+    Shoe = ShoeSerializer()
     shoe_name = serializers.ReadOnlyField(source='Shoe.name')
     wishlist_name = serializers.ReadOnlyField(source='Wishlist.name')
 

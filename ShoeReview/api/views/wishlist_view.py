@@ -7,11 +7,16 @@ from ..serializers import WishlistSerializer
 # CRUD for Wishlist
 class WishlistListCreateView(APIView):
     def get(self, request):
-        wishlists = Wishlist.objects.all()
+        wishlists = Wishlist.objects.all().filter(User=request.user)
         serializer = WishlistSerializer(wishlists, many=True)
         return Response(serializer.data)
     
     def post(self, request):
+
+        # Ensure a user can have only one wishlist
+        if Wishlist.objects.filter(User=request.user).exists():
+            return Response({"error": "User already has a wishlist."}, status=status.HTTP_400_BAD_REQUEST)
+        
         serializer = WishlistSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -22,9 +27,19 @@ class WishlistListCreateView(APIView):
 class WishlistDetailView(APIView):
     def get(self, request, pk):
         try:
-            wishlist = Wishlist.objects.get(pk=pk)
+            # Fetch the wishlist and ensure it belongs to the logged-in user
+            wishlist = Wishlist.objects.get(pk=pk, User=request.user)
             serializer = WishlistSerializer(wishlist)
-            return Response(serializer.data)
+
+            # Fetch items in the wishlist
+            wishlist_items = WishlistItem.objects.filter(Wishlist=wishlist)
+            wishlist_items_serializer = WishlistItemSerializer(wishlist_items, many=True)
+
+
+            return Response({
+                "wishlist": serializer.data,
+                "wishlist_items": wishlist_items_serializer.data,
+            })
         except Wishlist.DoesNotExist:
             return Response({'error': 'Wishlist not found'}, status=status.HTTP_404_NOT_FOUND)
         

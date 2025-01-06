@@ -8,7 +8,7 @@ class Wishlist(models.Model):
     Represents a wishlist created by a user.
     """
     WishlistID = models.AutoField(primary_key=True)
-    User = models.ForeignKey(User, on_delete=models.CASCADE, related_name='wishlists')  
+    User = models.OneToOneField(User, on_delete=models.CASCADE, related_name='wishlist')
     name = models.CharField(max_length=100)
 
     def __str__(self):

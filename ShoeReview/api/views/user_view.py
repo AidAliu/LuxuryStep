@@ -8,7 +8,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from api.models import Order, Payment, Brand, Shoe, Review, Style, OrderItem
+from api.models import Order, Payment, Brand, Shoe, Review, Style, OrderItem, Wishlist
 
 
 
@@ -42,6 +42,11 @@ class RegisterView(APIView):
                 password=password,
                 first_name=first_name,
                 last_name=last_name
+            )
+
+            Wishlist.objects.create(
+                User=user,
+                name=f"{user.username}'s Wishlist"  
             )
             return Response(
                 {

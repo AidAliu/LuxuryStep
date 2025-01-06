@@ -95,12 +95,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Static files settings
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / "static",  # Directory for additional static files
-]
-STATIC_ROOT = BASE_DIR / 'staticfiles'  # For production use
 
 # Media files settings
 MEDIA_URL = '/media/'  # URL for accessing media files
