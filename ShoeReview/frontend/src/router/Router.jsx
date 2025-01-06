@@ -96,6 +96,7 @@ const AppRouter = () => {
         <Route path="/reviewshoe/:ShoeID" element={<ReviewShoe/>} />
         <Route path="/purchaseshoe/:ShoeID" element={<PurchaseShoe/>} />
         <Route path="/addtowishlist/:ShoeID" element={<Wishlist/>} />
+        <Route path="/addtowishlist/" element={<Wishlist/>} />
 
       </Routes>
     </Router>
