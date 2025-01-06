@@ -1,3 +1,4 @@
+
 from pathlib import Path
 import environ  # For environment variable management
 
@@ -99,8 +100,7 @@ STATIC_URL = '/static/'
 
 # Media files settings
 MEDIA_URL = '/media/'  # URL for accessing media files
-MEDIA_ROOT = BASE_DIR / 'media'  # Directory for storing media files
-
+MEDIA_ROOT = BASE_DIR / 'media' 
 # Internationalization
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'

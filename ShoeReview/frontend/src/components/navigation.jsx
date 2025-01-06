@@ -127,7 +127,7 @@ export const Navigation = () => {
                 <Link
                 style={{color: "grey"}}
                   to="/addtowishlist">
-                Wishlist
+                Cart
                 </Link>
               </a>
             </li>
