@@ -21,17 +21,17 @@ const ReviewShoe = () => {
       try {
         const token = localStorage.getItem("accessToken");
         const headers = token ? { Authorization: `Bearer ${token}` } : {};
-  
+
         const shoeResponse = await axios.get(
           `http://127.0.0.1:8000/api/shoes/${ShoeID}/`,
           { headers }
         );
-  
+
         const reviewsResponse = await axios.get(
           `http://127.0.0.1:8000/api/shoes/${ShoeID}/reviews/`,
           { headers }
         );
-  
+
         setShoe(shoeResponse.data);
         setReviews(reviewsResponse.data);
       } catch (err) {
@@ -39,7 +39,7 @@ const ReviewShoe = () => {
         console.error(err);
       }
     };
-  
+
     fetchShoeData();
   }, [ShoeID]);
 
@@ -66,7 +66,9 @@ const ReviewShoe = () => {
       );
 
       // Refresh reviews after successful submission
-      const updatedReviews = await axios.get(`http://127.0.0.1:8000/api/shoes/${ShoeID}/reviews/`);
+      const updatedReviews = await axios.get(
+        `http://127.0.0.1:8000/api/shoes/${ShoeID}/reviews/`
+      );
       setReviews(updatedReviews.data);
       setRating(0); // Reset rating
       setComment(""); // Reset comment
@@ -77,12 +79,23 @@ const ReviewShoe = () => {
     }
   };
 
-  // Calculate average rating
+  // Calculate average rating and ensure it’s formatted correctly
   const calculateAverageRating = () => {
     if (reviews.length === 0) return 0;
 
-    const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
-    return (totalRating / reviews.length).toFixed(1);
+    // Filter only valid ratings between 1 and 5
+    const validReviews = reviews.filter((review) => review.rating >= 1 && review.rating <= 5);
+
+    const totalRating = validReviews.reduce((sum, review) => sum + review.rating, 0);
+
+    // Return average with one decimal place or 0 if no valid reviews
+    return validReviews.length > 0 ? (totalRating / validReviews.length).toFixed(1) : 0;
+  };
+
+  // Calculate rounded stars for display purposes
+  const calculateRoundedStars = () => {
+    const average = calculateAverageRating();
+    return Math.round(average); // Round for star display
   };
 
   return (
@@ -93,7 +106,11 @@ const ReviewShoe = () => {
       {shoe && (
         <div className="text-center mb-4">
           <img
-            src={shoe.image_url.startsWith("/media/") ? `http://127.0.0.1:8000${shoe.image_url}` : `http://127.0.0.1:8000/media/${shoe.image_url}`}
+            src={
+              shoe.image_url.startsWith("/media/")
+                ? `http://127.0.0.1:8000${shoe.image_url}`
+                : `http://127.0.0.1:8000/media/${shoe.image_url}`
+            }
             alt={shoe.name || "Shoe Image"}
             className="img-fluid rounded"
             style={{ maxWidth: "300px", maxHeight: "300px", objectFit: "cover" }}
@@ -103,7 +120,7 @@ const ReviewShoe = () => {
         </div>
       )}
 
-      {/* Rating Section (First) */}
+      {/* Rating Section */}
       <form onSubmit={handleSubmit}>
         <div className="text-center mb-3">
           <label htmlFor="rating" className="form-label">
@@ -141,19 +158,20 @@ const ReviewShoe = () => {
         </button>
       </form>
 
-      {/* Average Rating Section (Below the form and smaller) */}
-      <div className="text-center mb-4 mt-6" style={{ fontSize: "0.9em" }}>
+      {/* Average Rating Section */}
+      <div className="text-center mb-4 mt-6">
         <h3>Average Rating:</h3>
         <div>
+          {/* Stars rounded for visual display */}
           {[1, 2, 3, 4, 5].map((star) => (
             <FaStar
               key={star}
               size={25}
-              color={star <= calculateAverageRating() ? "#ffc107" : "#e4e5e9"}
+              color={star <= calculateRoundedStars() ? "#ffc107" : "#e4e5e9"}
             />
           ))}
         </div>
-        <p>{calculateAverageRating()} out of 5</p>
+        <p>{calculateAverageRating()} out of 5</p> {/* Exact average displayed */}
       </div>
 
       <div className="mt-3">

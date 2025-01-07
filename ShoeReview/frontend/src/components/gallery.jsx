@@ -18,6 +18,31 @@ export const Gallery = () => {
       .catch((error) => console.error("Error fetching shoes:", error));
   }, []);
 
+  const handlePurchase = async (ShoeID) => {
+    if (!isLoggedIn) {
+      alert("You need to be logged in to make a purchase!");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("accessToken");
+
+      const payload = { shoe_id: ShoeID, quantity: 1 };
+
+      // Add shoe to active order
+      await axios.post("http://127.0.0.1:8000/api/orders/add/", payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      alert("Shoe added to your cart!");
+      navigate("/cart"); // Redirect to cart
+    } catch (err) {
+      console.error("Error adding shoe to cart:", err);
+      alert("Failed to add shoe to cart. Please try again.");
+    }
+  };
+
   const handleReview = (ShoeID) => {
     if (!isLoggedIn) {
       alert("You need to be logged in to leave a review!");
@@ -25,11 +50,6 @@ export const Gallery = () => {
     } else {
       navigate(`/reviewshoe/${ShoeID}`);
     }
-  };
-
-  const handlePurchase = (ShoeID) => {
-    console.log(`Purchase button clicked for Shoe ID: ${ShoeID}`);
-    navigate(`/purchaseshoe/${ShoeID}`);
   };
 
   const handleWishlist = (ShoeID) => {
@@ -66,7 +86,7 @@ export const Gallery = () => {
                       }}
                     />
                     <div className="overlay">
-                    <button
+                      <button
                         className="btn btn-success"
                         onClick={() => handleWishlist(shoe.ShoeID)}
                       >

@@ -12,7 +12,7 @@ from .views.shoe_view import ShoeListView, ShoeDetailView
 from .views.brand_view import BrandDetailView, BrandListCreateView
 from .views.review_view import ReviewDetailView, ReviewListCreateView, ShoeReviewsView
 from .views.style_view import StyleDetailView, StyleListCreateView
-from .views.order_view import OrderDetailView, OrderListCreateView
+from .views.order_view import ActiveOrderView,OrderDetailView, OrderListCreateView, AddToOrderView, RemoveFromOrderView, FinalizeOrderView
 from .views.order_item_view import OrderItemDetailView, OrderItemListCreateView
 from .views.wishlist_view import WishlistDetailView, WishlistListCreateView
 from .views.wishlistitem_view import WishlistItemDetailView, WishlistItemListCreateView
@@ -67,6 +67,12 @@ urlpatterns = [
     path('order-items/', OrderItemListCreateView.as_view(), name='order-item-list-create'),
     path('order-items/<int:pk>/', OrderItemDetailView.as_view(), name='order-item-detail'),
 
+    #Order(Cart part)
+     path('orders/active/', ActiveOrderView.as_view(), name='active-order'),
+    path('orders/add/', AddToOrderView.as_view(), name='add-to-order'),
+    path('orders/remove/<int:order_item_id>/', RemoveFromOrderView.as_view(), name='remove-from-order'),
+    path('orders/finalize/<int:order_id>/', FinalizeOrderView.as_view(), name='finalize-order'),
+    
     # Wishlist/Wishlist Item API endpoints
     path('wishlists/', WishlistListCreateView.as_view(), name='wishlist-list'),
     path('wishlists/<int:pk>/', WishlistDetailView.as_view(), name='wishlist-detail'),

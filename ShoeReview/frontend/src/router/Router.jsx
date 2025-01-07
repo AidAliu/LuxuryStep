@@ -28,7 +28,7 @@ import WishlistItemForm from "../views/controlpanel/WishlistItem/WishlistItemFor
 import ReviewShoe from "../views/Homepage/Gallery/ReviewShoe";
 import PurchaseShoe from "../views/Homepage/Gallery/PurchaseShoe";
 import Wishlist from "../views/Homepage/Gallery/Wishlist";
-
+import Cart from "../components/cart";
 const AppRouter = () => {
   return (
     <Router>
@@ -99,6 +99,8 @@ const AppRouter = () => {
         <Route path="/addtowishlist/:ShoeID" element={<Wishlist/>} />
         <Route path="/addtowishlist/" element={<Wishlist/>} />
 
+        {/*Orders and Cart*/}
+        <Route path="/cart" element={<Cart />} />
       </Routes>
     </Router>
   );

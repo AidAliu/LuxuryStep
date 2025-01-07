@@ -2,8 +2,26 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
-from ..models import Order
-from ..serializers import OrderSerializer
+from ..models import Order, OrderItem, Shoe
+from ..serializers import OrderSerializer, OrderItemSerializer
+from rest_framework.permissions import IsAuthenticated
+
+class ActiveOrderView(APIView):
+    """
+    Retrieve or create the active (Pending) order for the user.
+    """
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        user = request.user
+
+        #check if the user has an active order
+        order = Order.objects.filter(User=user, status='Pending').first()
+
+        if not order:
+            order = Order.objects.create(User=user, status='Pending', total_price=0)
+
+        serializer = OrderSerializer(order)
+        return Response(serializer.data, status=status.HTTP_200_OK)            
 
 
 class OrderListCreateView(APIView):
@@ -53,3 +71,84 @@ class OrderDetailView(APIView):
         order = get_object_or_404(Order, pk=pk)
         order.delete()
         return Response({'message': 'Order deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+    
+class AddToOrderView(APIView):
+    """
+    Add an item to the user's active order (Pending status). Creates the order if it doesn't exist.
+    """
+
+    def post(self, request):
+        user = request.user
+
+        # Check if the user has an active (Pending) order
+        order, created = Order.objects.get_or_create(User=user, status='Pending')
+
+        # Extract data from the request
+        shoe_id = request.data.get('shoe_id')
+        quantity = request.data.get('quantity', 1)
+
+        # Validate Shoe existence
+        shoe = get_object_or_404(Shoe, ShoeID=shoe_id)
+
+        # **This block** handles the creation or update of an OrderItem
+        order_item = OrderItem.objects.filter(Order=order, Shoe=shoe).first()
+        if order_item:
+            # Update existing item
+            order_item.quantity += quantity
+            order_item.price = shoe.price * order_item.quantity
+        else:
+            # Create new item
+            order_item = OrderItem.objects.create(
+                Order=order,
+                Shoe=shoe,
+                quantity=quantity,
+                price=shoe.price * quantity,
+            )
+
+        order_item.save()
+
+        # Update the total price in the Order
+        order.total_price = sum(item.price for item in order.items.all())
+        order.save()
+
+        return Response({"message": "Item added to order", "order_id": order.OrderID}, status=status.HTTP_200_OK)
+
+
+class RemoveFromOrderView(APIView):
+    """
+    Remove an item from the user's active order.
+    """
+    def delete(self, request, order_item_id):
+        user = request.user
+
+        # Find the item in the active order
+        order_item = get_object_or_404(OrderItem, id=order_item_id, Order__User=user, Order__status='Pending')
+
+        # Remove the item
+        order = order_item.Order
+        order_item.delete()
+
+        # Recalculate the total price
+        order.total_price = sum(item.price for item in order.items.all())
+        order.save()
+
+        return Response({"message": "Item removed from order"}, status=status.HTTP_200_OK)
+
+class FinalizeOrderView(APIView):
+
+    """
+    finalize the user's current(Pending) order
+    """
+
+    def post(self, request, order_id):
+        user = request.user
+
+        #retrieve the order
+        order = get_object_or_404(Order, id=order_id, User=user, status='Pending')
+
+        order.shipping_address = request.data.get('shipping_address', "")
+        order.status = 'Confirmed'
+        order.save()
+
+        return Response({'message': 'Order finalized successfully'}, status=status.HTTP_200_OK)
+    

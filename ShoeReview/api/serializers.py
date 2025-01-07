@@ -77,6 +77,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
+    items = OrderItemSerializer(many=True, read_only=True)
     User = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), required=False)
     username = serializers.CharField(source='User.username', read_only=True)
     class Meta:
