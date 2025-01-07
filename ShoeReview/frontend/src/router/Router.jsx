@@ -28,7 +28,7 @@ import WishlistItemForm from "../views/controlpanel/WishlistItem/WishlistItemFor
 import ReviewShoe from "../views/Homepage/Gallery/ReviewShoe";
 import PurchaseShoe from "../views/Homepage/Gallery/PurchaseShoe";
 import Wishlist from "../views/Homepage/Gallery/Wishlist";
-import Cart from "../components/cart";
+import Cart from "../views/Homepage/Gallery/cart";
 const AppRouter = () => {
   return (
     <Router>
@@ -95,7 +95,7 @@ const AppRouter = () => {
         
         {/* Gallery Elements */}
         <Route path="/reviewshoe/:ShoeID" element={<ReviewShoe/>} />
-        <Route path="/purchaseshoe/:ShoeID" element={<PurchaseShoe/>} />
+        <Route path="/purchaseshoe/:OrderID" element={<PurchaseShoe/>} />
         <Route path="/addtowishlist/:ShoeID" element={<Wishlist/>} />
         <Route path="/addtowishlist/" element={<Wishlist/>} />
 

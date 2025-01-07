@@ -65,7 +65,7 @@ const Cart = () => {
   };
 
   const handleCheckout = () => {
-    navigate(`/order/checkout/${order.id}`);
+    navigate(`/purchaseshoe/${order.OrderID}`);
   };
 
   if (loading) return <p>Loading...</p>;

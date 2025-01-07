@@ -1,3 +1,4 @@
+from django.forms import ValidationError
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.db import transaction
@@ -55,7 +56,6 @@ class WishlistSerializer(serializers.ModelSerializer):
         fields = '__all__'  # This includes all model fields + 'username'
 
 
-# OrderItem Serializer
 class OrderItemSerializer(serializers.ModelSerializer):
     Shoe = serializers.PrimaryKeyRelatedField(queryset=Shoe.objects.all())  
 
@@ -75,11 +75,12 @@ class OrderItemSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Price must be a positive number.")
         return value
 
-
+# Order Serializer
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True, read_only=True)
     User = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), required=False)
     username = serializers.CharField(source='User.username', read_only=True)
+    
     class Meta:
         model = Order
         fields = '__all__'
@@ -99,9 +100,6 @@ class OrderSerializer(serializers.ModelSerializer):
             setattr(instance, attr, value)
         instance.save()
         return instance
-
-
-
 
 # Review Serializer
 class ReviewSerializer(serializers.ModelSerializer):
@@ -131,16 +129,45 @@ class StyleSerializer(serializers.ModelSerializer):
 
 # Payment Serializer
 class PaymentSerializer(serializers.ModelSerializer):
+    order_OrderID = serializers.IntegerField(write_only=True)  # Add the order_id field
+
     class Meta:
         model = Payment
         fields = '__all__'
-    
+
+    def create(self, validated_data):
+        order_OrderID = validated_data.pop('order_id', None)
+        user = self.context['request'].user  # Get the user from the request context
+
+        # Create the payment object
+        payment = super().create(validated_data)
+
+        if order_OrderID:
+            try:
+                # Fetch the associated order
+                order = Order.objects.get(OrderID=order_OrderID, User=user)
+
+                if order.status != 'Pending':
+                    raise serializers.ValidationError("This order has already been processed.")
+
+                # Mark the order as completed
+                order.status = 'Completed'
+                order.save()
+
+                # Clear the associated cart items
+                OrderItem.objects.filter(Order=order).delete()
+
+            except Order.DoesNotExist:
+                raise serializers.ValidationError("Order not found or access denied.")
+
+        return payment
+
     def update(self, instance, validated_data):
+        # Update existing payment details
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
         return instance
-
 
 
 

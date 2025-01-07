@@ -1,32 +1,40 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
 
 const PurchaseShoe = () => {
-  const { ShoeID } = useParams();
+  const { OrderID } = useParams();
   const navigate = useNavigate();
+  const [shoeDetails, setShoeDetails] = useState(null);
+  const [order, setOrder] = useState(null);
+  const [shippingAddress, setShippingAddress] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const [quantity, setQuantity] = useState(1);
-  const [purchases, setPurchases] = useState([]); // State to store purchase history
-  const [error, setError] = useState(null);
-
-  // Fetch purchase history on component mount
   useEffect(() => {
-    const fetchPurchases = async () => {
+    const fetchOrderDetails = async () => {
+      setLoading(true);
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/shoes/${ShoeID}/purchases/`);
-        setPurchases(response.data);
+        const response = await axios.get(`http://127.0.0.1:8000/api/orders/${OrderID}/`);
+        setOrder(response.data);
       } catch (err) {
-        console.error("Error fetching purchases:", err);
-        setError("Failed to load purchase history.");
+        console.error("Error fetching order details:", err);
+        setError("Failed to fetch order details.");
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchPurchases();
-  }, [ShoeID]);
+    fetchOrderDetails();
+  }, [OrderID]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!shippingAddress) {
+      setError("Shipping address is required.");
+      return;
+    }
 
     const token = localStorage.getItem("accessToken");
     if (!token) {
@@ -34,75 +42,68 @@ const PurchaseShoe = () => {
       return;
     }
 
+    setLoading(true);
+
     try {
-      const payload = {
-        Shoe: ShoeID,
-        quantity: quantity,
-      };
+      console.log("Shipping Address:", shippingAddress); // Debugging log
+      const response = await axios.post(
+        `http://127.0.0.1:8000/api/orders/${OrderID}/purchase/`,
+        { shipping_address: shippingAddress },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
-      await axios.post(`http://127.0.0.1:8000/api/purchases/`, payload, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      alert("Purchase successful!");
-
-      // Refresh the purchase history after successful submission
-      const response = await axios.get(`http://127.0.0.1:8000/api/shoes/${ShoeID}/purchases/`);
-      setPurchases(response.data);
-
+      alert("Purchase successful! Your order is now complete.");
+      setOrder(null);
+      navigate("/"); 
     } catch (err) {
-      console.error("Error making purchase:", err);
-      setError(err.response?.data?.error || "An error occurred while processing the purchase.");
+      console.error("Error completing purchase:", err);
+      setError(err.response?.data?.error || "An error occurred while completing the purchase.");
+    } finally {
+      setLoading(false);
     }
   };
 
+  if (loading) {
+    return <p>Loading order details...</p>;
+  }
+
+  if (!order) {
+    return <p>No order details found.</p>;
+  }
+
   return (
-    <div className="container">
+    <div className="purchase-container">
       <h1>Purchase Shoe</h1>
-      {error && <p className="text-danger">{error}</p>}
+      <div className="order-details">
+        <h3>Order Summary</h3>
+        {order.items?.map((item) => (
+          <div key={item.id} className="order-item">
+            <p>Shoe: {item.shoe?.name || "Unknown"}</p>
+            <p>Brand: {item.shoe?.brand || "Unknown"}</p>
+            <p>Style: {item.shoe?.style || "Unknown"}</p>
+            <p>Quantity: {item.quantity}</p>
+            <p>Price: ${item.price}</p>
+          </div>
+        ))}
+        <h3>Total: ${order.total_price || 0}</h3>
+      </div>
       <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="quantity" className="form-label">
-            Quantity
-          </label>
+        <div className="form-group">
+          <label htmlFor="shippingAddress">Shipping Address:</label>
           <input
-            type="number"
-            className="form-control"
-            id="quantity"
-            name="quantity"
-            value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
-            min="1"
+            type="text"
+            id="shippingAddress"
+            value={shippingAddress}
+            onChange={(e) => setShippingAddress(e.target.value)}
+            placeholder="Enter your shipping address"
             required
           />
         </div>
-        <button type="submit" className="btn btn-primary mt-3">
-          Purchase
-        </button>
+        <button type="submit" disabled={loading}>Complete Purchase</button>
       </form>
-
-      <div className="mt-5">
-        <h2>Purchase History</h2>
-        {purchases.length === 0 ? (
-          <p>No purchases yet. Be the first to purchase this shoe!</p>
-        ) : (
-          <ul className="list-group">
-            {purchases.map((purchase) => (
-              <li key={purchase.id} className="list-group-item">
-                <strong>Quantity:</strong> {purchase.quantity}
-                <br />
-                <strong>Date:</strong> {new Date(purchase.created_at).toLocaleDateString()}
-                <br />
-                <strong>By:</strong> {purchase.User.username}
-              </li>
-            ))}
-          </ul>
-        )}
-        <div className="text-center mt-4">
-          <button className="btn btn-link" onClick={() => navigate('/')}>
-            Return to Homepage
-          </button>
-        </div>
-      </div>
+      {error && <p className="error-message">{error}</p>}
     </div>
   );
 };

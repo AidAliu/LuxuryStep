@@ -11,10 +11,11 @@ class ActiveOrderView(APIView):
     Retrieve or create the active (Pending) order for the user.
     """
     permission_classes = [IsAuthenticated]
+    
     def get(self, request):
         user = request.user
 
-        #check if the user has an active order
+        # Check if the user has an active order
         order = Order.objects.filter(User=user, status='Pending').first()
 
         if not order:
@@ -22,7 +23,6 @@ class ActiveOrderView(APIView):
 
         serializer = OrderSerializer(order)
         return Response(serializer.data, status=status.HTTP_200_OK)            
-
 
 class OrderListCreateView(APIView):
     """
@@ -53,7 +53,6 @@ class OrderDetailView(APIView):
     """
     Handles retrieving, updating, and deleting a specific order.
     """
-
     def get(self, request, pk):
         order = get_object_or_404(Order, pk=pk)
         serializer = OrderSerializer(order)
@@ -76,7 +75,6 @@ class AddToOrderView(APIView):
     """
     Add an item to the user's active order (Pending status). Creates the order if it doesn't exist.
     """
-
     def post(self, request):
         user = request.user
 
@@ -90,7 +88,7 @@ class AddToOrderView(APIView):
         # Validate Shoe existence
         shoe = get_object_or_404(Shoe, ShoeID=shoe_id)
 
-        # **This block** handles the creation or update of an OrderItem
+        # This block handles the creation or update of an OrderItem
         order_item = OrderItem.objects.filter(Order=order, Shoe=shoe).first()
         if order_item:
             # Update existing item
@@ -113,7 +111,6 @@ class AddToOrderView(APIView):
 
         return Response({"message": "Item added to order", "order_id": order.OrderID}, status=status.HTTP_200_OK)
 
-
 class RemoveFromOrderView(APIView):
     """
     Remove an item from the user's active order.
@@ -135,20 +132,62 @@ class RemoveFromOrderView(APIView):
         return Response({"message": "Item removed from order"}, status=status.HTTP_200_OK)
 
 class FinalizeOrderView(APIView):
-
     """
-    finalize the user's current(Pending) order
+    Finalize the user's current (Pending) order by updating its status to 'Confirmed'.
     """
+    permission_classes = [IsAuthenticated]
 
-    def post(self, request, order_id):
-        user = request.user
+    def post(self, request, OrderID):
+        try:
+            # Retrieve the order using OrderID
+            order = get_object_or_404(Order, OrderID=OrderID, User=request.user, status='Pending')
 
-        #retrieve the order
-        order = get_object_or_404(Order, id=order_id, User=user, status='Pending')
+            # Ensure shipping address is provided
+            shipping_address = request.data.get('shipping_address')
+            if not shipping_address:
+                return Response({'error': 'Shipping address is required.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        order.shipping_address = request.data.get('shipping_address', "")
-        order.status = 'Confirmed'
-        order.save()
+            # Update the order details
+            order.shipping_address = shipping_address
+            order.status = 'Confirmed'
+            order.save()
 
-        return Response({'message': 'Order finalized successfully'}, status=status.HTTP_200_OK)
-    
+            return Response({'message': 'Order finalized successfully.'}, status=status.HTTP_200_OK)
+        except Order.DoesNotExist:
+            return Response({'error': 'Order not found or not pending.'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            # Log the error for debugging
+            print(f"Unexpected error: {str(e)}")
+            return Response({'error': 'An unexpected error occurred.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class PurchaseOrderView(APIView):
+    """
+    Complete the purchase of a confirmed order, updating its status to 'Shipped' or 'Delivered'.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, OrderID):
+        try:
+            # Retrieve the confirmed order using OrderID
+            order = get_object_or_404(Order, OrderID=OrderID, User=request.user, status='Confirmed')
+
+            # Ensure shipping address is provided
+            shipping_address = request.data.get('shipping_address')
+            if not shipping_address:
+                return Response({'error': 'Shipping address is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Log the request for debugging
+            print(f"Purchase request: OrderID={OrderID}, Shipping Address={shipping_address}")
+
+            # Update order details
+            order.shipping_address = shipping_address
+            order.status = 'Shipped'  # Or another appropriate status like 'Delivered'
+            order.save()
+
+            return Response({'message': 'Purchase successful. Order is now shipped.'}, status=status.HTTP_200_OK)
+        except Order.DoesNotExist:
+            return Response({'error': 'Order not found or not confirmed.'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            # Log the error for debugging
+            print(f"Unexpected error: {str(e)}")
+            return Response({'error': 'An unexpected error occurred.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

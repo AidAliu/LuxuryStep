@@ -102,7 +102,7 @@ export const Gallery = () => {
                         className="btn btn-primary"
                         onClick={() => handlePurchase(shoe.ShoeID)}
                       >
-                        Purchase
+                        Add to Cart
                       </button>
                     </div>
                   </div>
