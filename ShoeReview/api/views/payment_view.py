@@ -4,23 +4,19 @@ from rest_framework import status
 from ..models import Payment, Order, OrderItem
 from ..serializers import PaymentSerializer
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
 
 class PaymentListCreateView(APIView):
     permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        """
-        GET: list all payments
-        """
-        payments = Payment.objects.all()
-        serializer = PaymentSerializer(payments, many=True)
-        return Response(serializer.data)
 
     def post(self, request):
         """
         POST: create a new payment and process the associated order
         """
-        serializer = PaymentSerializer(data=request.data)
+        user = request.user  # Check if the user is being set correctly
+        print("Authenticated User:", user)
+        
+        serializer = PaymentSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             # Save the payment record
             payment = serializer.save()
@@ -100,3 +96,15 @@ class PaymentDetailView(APIView):
 
         payment.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class PaymentAPIView(APIView):
+    authentication_classes = [TokenAuthentication]  # If you're using TokenAuthentication
+    permission_classes = [IsAuthenticated]  # Ensure user is authenticated
+
+    def post(self, request, *args, **kwargs):
+        serializer = PaymentSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)

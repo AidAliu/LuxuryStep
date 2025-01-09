@@ -7,7 +7,7 @@ from .views.user_view import (
     UserListView,
     UserDetailView,
 )
-from .views.payment_view import PaymentListCreateView, PaymentDetailView
+from .views.payment_view import PaymentListCreateView, PaymentDetailView, PaymentAPIView
 from .views.shoe_view import ShoeListView, ShoeDetailView
 from .views.brand_view import BrandDetailView, BrandListCreateView
 from .views.review_view import ReviewDetailView, ReviewListCreateView, ShoeReviewsView
@@ -48,6 +48,7 @@ urlpatterns = [
     # Payments API endpoints
     path('payments/', PaymentListCreateView.as_view(), name='payment-list'),
     path('payments/<int:pk>/', PaymentDetailView.as_view(), name='payment-detail'),
+    path('paymentsapi/', PaymentListCreateView.as_view(), name='payment-list'),
 
     # Shoes API endpoints
     path('shoes/', ShoeListView.as_view(), name='shoe-list'),
