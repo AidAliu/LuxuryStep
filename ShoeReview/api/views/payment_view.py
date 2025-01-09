@@ -7,53 +7,56 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 
 class PaymentListCreateView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]  # Ensure user is authenticated
 
     def post(self, request):
-        """
-        POST: create a new payment and process the associated order
-        """
-        user = request.user  # Check if the user is being set correctly
-        print("Authenticated User:", user)
-        
-        serializer = PaymentSerializer(data=request.data, context={'request': request})
+        user = request.user  # Authenticated user
+        data = request.data.copy()  # Make a copy of the incoming data
+        order_id = data.get('OrderID')
+
+        # Log the incoming data for debugging
+        print(f"Debug: Received Payment Data - {data}")
+
+        try:
+            # Fetch the pending order
+            order = Order.objects.get(OrderID=order_id, User=user, status='Pending')
+            data['Order'] = order.OrderID  # Use OrderID explicitly
+        except Order.DoesNotExist:
+            return Response({"error": "No pending order found for this user."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Attach authenticated user to the data
+        data['User'] = user.id
+
+        serializer = PaymentSerializer(data=data, context={'request': request})
+
         if serializer.is_valid():
-            # Save the payment record
-            payment = serializer.save()
+            payment = serializer.save()  # Save the payment record
+            print(f"Debug: Payment Created - PaymentID: {payment.PaymentID}")  # Log payment creation
 
-            # Fetch the order ID from the payment data (assuming it's included in the payment)
-            order_id = serializer.validated_data.get('order_id')
-            try:
-                order = Order.objects.get(OrderID=order_id, User=request.user)
+            # Update the order to "Shipped"
+            order.status = 'Shipped'
+            order.shipping_address = data.get('shipping_address', order.shipping_address)
+            order.save()
 
-                if order.status != 'Pending':
-                    return Response(
-                        {"error": "This order has already been processed."},
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
+            # Optionally create a new pending order for the user
+            new_order = Order.objects.create(User=user, status='Pending')
+            print(f"Debug: New Order Created - OrderID: {new_order.OrderID}")
 
-                # Mark the order as completed
-                order.status = 'Completed'
-                order.save()
+            return Response(
+                {
+                    "message": "Payment successful! Order completed.",
+                    "payment": serializer.data,
+                    "new_order": new_order.OrderID,
+                },
+                status=status.HTTP_201_CREATED,
+            )
 
-                # Clear the associated cart items
-                OrderItem.objects.filter(Order=order).delete()
-
-                return Response(
-                    {
-                        "message": "Payment successful! Order completed, and your cart has been cleared.",
-                        "payment": serializer.data,
-                    },
-                    status=status.HTTP_201_CREATED,
-                )
-            except Order.DoesNotExist:
-                return Response(
-                    {"error": "Order not found or access denied."},
-                    status=status.HTTP_404_NOT_FOUND,
-                )
-
+        # Log serializer errors
+        print(f"Debug: Serializer Errors - {serializer.errors}")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+       
 
 class PaymentDetailView(APIView):
     permission_classes = [IsAuthenticated]
@@ -103,8 +106,16 @@ class PaymentAPIView(APIView):
     permission_classes = [IsAuthenticated]  # Ensure user is authenticated
 
     def post(self, request, *args, **kwargs):
+        user = request.user  # Check if the user is being set correctly
+        print(f"Debug: Authenticated User - {user.username}")  # Log the user
+        print(f"Debug: Incoming Data - {request.data}") 
+      
         serializer = PaymentSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
+            print(f"Debug: Serializer Validated Data - {serializer.validated_data}")  
             serializer.save()
             return Response(serializer.data, status=201)
-        return Response(serializer.errors, status=400)
+        else:
+            print(f"Debug: Serializer Errors - {serializer.errors}")  # Log errors
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    

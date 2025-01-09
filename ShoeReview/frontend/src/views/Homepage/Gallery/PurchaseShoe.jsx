@@ -5,13 +5,13 @@ import { useNavigate, useParams } from "react-router-dom";
 const PurchaseShoe = () => {
   const { OrderID } = useParams();
   const navigate = useNavigate();
-  const [shoeDetails, setShoeDetails] = useState(null);
   const [payment, setPayment] = useState();
   const [order, setOrder] = useState(null);
   const [shippingAddress, setShippingAddress] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Fetch order details when component mounts
   useEffect(() => {
     const fetchOrderDetails = async () => {
       setLoading(true);
@@ -29,57 +29,56 @@ const PurchaseShoe = () => {
     fetchOrderDetails();
   }, [OrderID]);
 
+  // Handle form submission for purchase
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
-    if (!shippingAddress) {
-      setError("Shipping address is required.");
+
+    if (!shippingAddress || !payment) {
+      setError("Shipping address and payment method are required.");
       return;
     }
-  
-    if (!payment) {
-      setError("Payment method is required.");
-      return;
-    }
-  
+
     const token = localStorage.getItem("accessToken");
     if (!token) {
       alert("No access token found.");
       return;
     }
-  
+
     setLoading(true);
-  
+
     try {
-      // Log the data that will be sent to the backend
       const paymentData = {
-        payment_method: payment, // Payment method selected
-        amount: order.total_price, // Total amount from the order
-        Order: OrderID, // Order ID
+        payment_method: payment,
+        amount: order.total_price,
+        OrderID: OrderID,
+        shipping_address: shippingAddress, // Include shipping address
       };
+
       console.log("Payment Data to be sent:", paymentData);
-  
+
       // Update the order with the shipping address
       await axios.put(
         `http://127.0.0.1:8000/api/orders/${OrderID}/`,
         { shipping_address: shippingAddress },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-  
+
       // Create a payment record
-      await axios.post(
+      const response = await axios.post(
         `http://127.0.0.1:8000/api/paymentsapi/`,
-        paymentData, // Send the payment data without 'User'
-        {
-          headers: { Authorization: `Bearer ${token}` },  // Ensure the token is passed here
-        }
+        paymentData,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-  
+
       alert("Purchase successful! Your order is now complete.");
-      setOrder(null);
-      navigate("/"); // Redirect to home or another page
+
+      // Optionally redirect or handle response
+      if (response.data.new_order_id) {
+        console.log("New Order ID:", response.data.new_order_id);
+        navigate(`/cart`);
+      } else {
+        navigate("/");
+      }
     } catch (err) {
       console.error("Error completing purchase:", err);
       setError(err.response?.data?.error || "An error occurred while completing the purchase.");
@@ -87,9 +86,6 @@ const PurchaseShoe = () => {
       setLoading(false);
     }
   };
-  
-  
-  
 
   if (loading) {
     return <p>Loading order details...</p>;
@@ -104,15 +100,19 @@ const PurchaseShoe = () => {
       <h1>Purchase Shoe</h1>
       <div className="order-details">
         <h3>Order Summary</h3>
-        {order.items?.map((item) => (
-          <div key={item.OrderID} className="order-item">
-            <p>Shoe: {item.Shoe?.name || "Unknown"}</p>
-            <p>Brand: {item.Shoe?.BrandID || "Unknown"}</p>
-            <p>Style: {item.Shoe?.StyleID || "Unknown"}</p>
-            <p>Quantity: {item.quantity}</p>
-            <p>Price: ${item.price}</p>
-          </div>
-        ))}
+        {order.items?.length > 0 ? (
+          order.items.map((item) => (
+            <div key={item.id} className="order-item">
+              <p>Shoe: {item.Shoe?.name || "Unknown"}</p>
+              <p>Brand: {item.Shoe?.BrandID || "Unknown"}</p>
+              <p>Style: {item.Shoe?.StyleID || "Unknown"}</p>
+              <p>Quantity: {item.quantity}</p>
+              <p>Price: ${item.price}</p>
+            </div>
+          ))
+        ) : (
+          <p>No items in this order.</p>
+        )}
         <h3>Total: ${order.total_price || 0}</h3>
       </div>
       <form onSubmit={handleSubmit}>
@@ -122,31 +122,38 @@ const PurchaseShoe = () => {
             type="text"
             id="shippingAddress"
             value={shippingAddress}
-            onChange={(e) => setShippingAddress(e.target.value)}
+            onChange={(e) => {
+              setShippingAddress(e.target.value);
+              setError(""); // Clear error on change
+            }}
             placeholder="Enter your shipping address"
             required
           />
         </div>
         <div className="form-group">
-  <label htmlFor="payment_method">Payment Method:</label>
-  <select
-    className="form-control"
-    id="payment_method"
-    name="payment_method"
-    value={payment || ""} // Use payment state or default to an empty string
-    onChange={(e) => setPayment(e.target.value)} // Update the payment state on change
-    required
-  >
-    <option value="" disabled>
-      Select Payment Method
-    </option>
-    <option value="Card">Card</option>
-    <option value="PayPal">PayPal</option>
-    <option value="Cash">Cash</option>
-  </select>
-</div>
-
-        <button type="submit" disabled={loading}>Complete Purchase</button>
+          <label htmlFor="payment_method">Payment Method:</label>
+          <select
+            className="form-control"
+            id="payment_method"
+            name="payment_method"
+            value={payment || ""}
+            onChange={(e) => {
+              setPayment(e.target.value);
+              setError(""); // Clear error on change
+            }}
+            required
+          >
+            <option value="" disabled>
+              Select Payment Method
+            </option>
+            <option value="Card">Card</option>
+            <option value="PayPal">PayPal</option>
+            <option value="Cash">Cash</option>
+          </select>
+        </div>
+        <button type="submit" disabled={loading}>
+          {loading ? "Processing..." : "Complete Purchase"}
+        </button>
       </form>
       {error && <p className="error-message">{error}</p>}
     </div>

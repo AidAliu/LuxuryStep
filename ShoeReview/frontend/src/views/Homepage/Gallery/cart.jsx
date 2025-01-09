@@ -65,6 +65,10 @@ const Cart = () => {
   };
 
   const handleCheckout = () => {
+    if (!order || !order.OrderID) {
+      setError('No active order found to proceed with checkout.')
+        return;
+    }
     navigate(`/purchaseshoe/${order.OrderID}`);
   };
 

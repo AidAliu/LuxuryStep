@@ -53,15 +53,16 @@ class WishlistSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Wishlist
-        fields = '__all__'  # This includes all model fields + 'username'
+        fields = '__all__' 
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
     Shoe = serializers.PrimaryKeyRelatedField(queryset=Shoe.objects.all())  
-
+    OrderID = serializers.ReadOnlyField(source='Order.OrderID')
     class Meta:
         model = OrderItem
         fields = '__all__'
+
 
     # Validation for quantity
     def validate_quantity(self, value):
@@ -96,7 +97,12 @@ class OrderSerializer(serializers.ModelSerializer):
         # Update the User field if included in the payload
         if 'User' in validated_data:
             instance.User = validated_data.pop('User')
-        # Update other fields
+        
+
+        instance.shipping_address = validated_data.get('shipping_address', instance.shipping_address)
+        instance.status = validated_data.get('status', instance.status)
+       
+       
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
@@ -130,27 +136,30 @@ class StyleSerializer(serializers.ModelSerializer):
 
 # Payment Serializer
 class PaymentSerializer(serializers.ModelSerializer):
+    OrderID = serializers.PrimaryKeyRelatedField(queryset=Order.objects.all(), source='Order')
+    
     class Meta:
         model = Payment
         fields = '__all__'
 
-    def validate(self, data):
-        user = self.context['request'].user
+def validate(self, data):
+    user = self.context['request'].user
+    print(f"Debug: Validating for User - {user.username}")
+    print(f"Debug: Incoming Data for Validation - {data}")
 
-        if not user or not user.is_authenticated:
-            raise serializers.ValidationError({"User": "This field is required."})
+    order_id = data.get("OrderID")
+    if not Order.objects.filter(OrderID=order_id).exists():
+        print(f"Debug: OrderID {order_id} does not exist in the database.")
+        raise serializers.ValidationError({"OrderID": f"Order {order_id} does not exist."})
 
-        # Ensure Order exists in the database
-        order_id = data.get("Order")
-        if not Order.objects.filter(id=order_id).exists():
-            raise serializers.ValidationError({"Order": "Invalid order ID."})
+    # Validate amount
+    amount = data.get("amount")
+    if float(amount) <= 0:
+        print(f"Debug: Invalid amount {amount}")
+        raise serializers.ValidationError({"amount": "Amount must be greater than 0."})
 
-        # Validate amount (optional)
-        amount = data.get("amount")
-        if float(amount) <= 0:
-            raise serializers.ValidationError({"amount": "Amount must be greater than 0."})
+    return data
 
-        return data
 
 
 

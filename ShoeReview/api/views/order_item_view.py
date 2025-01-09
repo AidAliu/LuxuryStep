@@ -11,13 +11,22 @@ class OrderItemListCreateView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = OrderItemSerializer(data=request.data)
+        
+        #identify the active pending order for user
+        try:
+            user = request.user
+            active_order = Order.objects.get(User=user, status='Pending')
+        except Order.DoesNotExist:
+            return Response({'error': 'No active order found for this user.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        #validate and save new order items
+        data = request.data.copy()
+        data['Order'] = active_order.OrderID
+        serializer = OrderItemSerializer(data = data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 class OrderItemDetailView(APIView):
     def get(self, request, pk):
         try:
