@@ -12,6 +12,7 @@ const PaymentsForm = () => {
     payment_date: "",
     payment_method: "",
     Order: "",
+    OrderID: "",
     User: "",
   });
   const [loading, setLoading] = useState(false);
@@ -41,6 +42,7 @@ const PaymentsForm = () => {
             payment_date: payment.payment_date.split("T")[0] || "",
             payment_method: payment.payment_method || "",
             Order: payment.Order || "",
+            OrderID: payment.Order.OrderID || "",
             User: payment.User || "",
           });
         } catch (err) {
@@ -68,28 +70,30 @@ const PaymentsForm = () => {
       return;
     }
   
-    console.log("Submitting Payment Data: ", paymentData); // Log the paymentData before sending
-  
     try {
       setLoading(true);
   
+      const dataToSend = {
+        ...paymentData,
+        OrderID: parseInt(paymentData.Order), // Send Order as OrderID
+        User: parseInt(paymentData.User),   // Ensure User is an integer
+    };
+  
       if (PaymentID) {
-        // Update existing payment
         await axios.put(
           `http://127.0.0.1:8000/api/payments/${PaymentID}/`,
-          paymentData,
+          dataToSend,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         alert("Payment updated successfully!");
       } else {
-        // Create new payment
-        await axios.post(`http://127.0.0.1:8000/api/payments/`, paymentData, {
+        await axios.post(`http://127.0.0.1:8000/api/payments/`, dataToSend, {
           headers: { Authorization: `Bearer ${token}` },
         });
         alert("Payment created successfully!");
       }
   
-      navigate("/payments"); // Redirect to payments list
+      navigate("/payments");
     } catch (err) {
       console.error("Error saving payment:", err);
       setError("Failed to save payment");
@@ -97,6 +101,8 @@ const PaymentsForm = () => {
       setLoading(false);
     }
   };
+  
+
 
   if (loading) {
     return <div>Loading...</div>;
@@ -144,18 +150,6 @@ const PaymentsForm = () => {
             value={paymentData.payment_method}
             onChange={handleChange}
             required={!PaymentID}
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="Order">Order</label>
-          <input
-            type="number"
-            className="form-control"
-            id="Order"
-            name="Order"
-            value={paymentData.Order}
-            onChange={handleChange}
-            required={!PaymentID} // Required only when creating a new payment
           />
         </div>
         <div className="form-group">

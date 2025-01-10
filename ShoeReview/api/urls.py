@@ -81,6 +81,10 @@ urlpatterns = [
     path('orders/finalize/<int:OrderID>/', FinalizeOrderView.as_view(), name='finalize_order'),
     path('orders/purchase/<int:OrderID>/', PurchaseOrderView.as_view(), name='purchase_order'),
 
+    #Orderitems
+    path('order-items/', OrderItemListCreateView.as_view(), name='order_item_list_create'),
+    path('order-items/<int:pk>/', OrderItemDetailView.as_view(), name='order_item_detail'),
+
     # Wishlist and Wishlist Item API endpoints
     path('wishlists/', WishlistListCreateView.as_view(), name='wishlist-list'),
     path('wishlists/<int:pk>/', WishlistDetailView.as_view(), name='wishlist-detail'),

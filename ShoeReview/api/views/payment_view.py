@@ -9,6 +9,12 @@ from rest_framework.authentication import TokenAuthentication
 class PaymentListCreateView(APIView):
     permission_classes = [IsAuthenticated]  # Ensure user is authenticated
 
+    def get(self, request, *args, **kwargs):
+        # Retrieve all Payment objects
+        payments = Payment.objects.all()
+        serializer = PaymentSerializer(payments, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     def post(self, request):
         user = request.user  # Authenticated user
         data = request.data.copy()  # Make a copy of the incoming data
