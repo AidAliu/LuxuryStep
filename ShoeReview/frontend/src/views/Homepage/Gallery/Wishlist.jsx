@@ -47,9 +47,40 @@ const Wishlist = () => {
     }
   };
 
-  const handleOrder = (itemId) => {
-    console.log("Order button clicked for Item ID:", itemId);
-    navigate(`/order/${itemId}`);
+  const isLoggedIn = localStorage.getItem("accessToken");
+
+  const handlePurchase = async (ShoeID, itemId) => {
+    if (!isLoggedIn) {
+      alert("You need to be logged in to make a purchase!");
+      navigate("/login");
+      return;
+    }
+  
+    try {
+      const token = localStorage.getItem("accessToken");
+  
+      if (!token) {
+        throw new Error("Authorization token is missing");
+      }
+  
+      const payload = { shoe_id: ShoeID, quantity: 1 };
+  
+      // Add shoe to active order
+      await axios.post("http://127.0.0.1:8000/api/orders/add/", payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      // Remove the item from the wishlist
+      await axios.delete(`http://127.0.0.1:8000/api/wishlistitems/${itemId}/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      alert("Shoe added to your cart!");
+      navigate("/cart"); // Redirect to cart
+    } catch (err) {
+      console.error("Error processing the purchase:", err);
+      alert("Failed to process the purchase. Please try again.");
+    }
   };
 
   if (loading) return <p>Loading...</p>;
@@ -88,9 +119,9 @@ const Wishlist = () => {
                       </button>
                       <button
                         className="btn btn-primary mx-2"
-                        onClick={() => handleOrder(item.id)}
+                        onClick={() => handlePurchase(item.Shoe, item.id)} 
                       >
-                        Order
+                        Add to Cart
                       </button>
                     </div>
                   </div>
