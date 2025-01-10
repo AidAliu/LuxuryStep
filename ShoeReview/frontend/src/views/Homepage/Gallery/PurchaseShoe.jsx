@@ -51,7 +51,7 @@ const PurchaseShoe = () => {
         payment_method: payment,
         amount: order.total_price,
         OrderID: OrderID,
-        shipping_address: shippingAddress, // Include shipping address
+        shipping_address: shippingAddress,
       };
 
       console.log("Payment Data to be sent:", paymentData);
