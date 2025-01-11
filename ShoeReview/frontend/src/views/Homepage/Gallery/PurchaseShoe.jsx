@@ -7,17 +7,43 @@ const PurchaseShoe = () => {
   const navigate = useNavigate();
   const [payment, setPayment] = useState();
   const [order, setOrder] = useState(null);
+  const [shoeDetails, setShoeDetails] = useState({});
   const [shippingAddress, setShippingAddress] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [paymentDetails, setPaymentDetails] = useState({
+    cardNumber: "",
+    cardName: "",
+    expiryDate: "",
+    cvv: "",
+    paypalEmail: "",
+  });
 
-  // Fetch order details when component mounts
   useEffect(() => {
     const fetchOrderDetails = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/orders/${OrderID}/`);
-        setOrder(response.data);
+        const token = localStorage.getItem("accessToken");
+        if (!token) throw new Error("Authorization token missing");
+
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/orders/${OrderID}/`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        const activeOrder = response.data;
+        setOrder(activeOrder);
+
+        const detailedShoes = {};
+        for (const item of activeOrder.items) {
+          const shoeResponse = await axios.get(
+            `http://127.0.0.1:8000/api/shoes/${item.Shoe}/`,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          detailedShoes[item.Shoe] = shoeResponse.data;
+        }
+
+        setShoeDetails(detailedShoes);
       } catch (err) {
         console.error("Error fetching order details:", err);
         setError("Failed to fetch order details.");
@@ -29,12 +55,19 @@ const PurchaseShoe = () => {
     fetchOrderDetails();
   }, [OrderID]);
 
-  // Handle form submission for purchase
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!shippingAddress || !payment) {
       setError("Shipping address and payment method are required.");
+      return;
+    }
+
+    if (
+      (payment === "Card" && !paymentDetails.cardNumber) ||
+      (payment === "PayPal" && !paymentDetails.paypalEmail)
+    ) {
+      setError("Please fill in the required payment details.");
       return;
     }
 
@@ -54,16 +87,12 @@ const PurchaseShoe = () => {
         shipping_address: shippingAddress,
       };
 
-      console.log("Payment Data to be sent:", paymentData);
-
-      // Update the order with the shipping address
       await axios.put(
         `http://127.0.0.1:8000/api/orders/${OrderID}/`,
         { shipping_address: shippingAddress },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      // Create a payment record
       const response = await axios.post(
         `http://127.0.0.1:8000/api/paymentsapi/`,
         paymentData,
@@ -71,49 +100,129 @@ const PurchaseShoe = () => {
       );
 
       alert("Purchase successful! Your order is now complete.");
-
-      // Optionally redirect or handle response
-      if (response.data.new_order_id) {
-        console.log("New Order ID:", response.data.new_order_id);
-        navigate(`/cart`);
-      } else {
-        navigate("/");
-      }
+      navigate("/");
     } catch (err) {
       console.error("Error completing purchase:", err);
-      setError(err.response?.data?.error || "An error occurred while completing the purchase.");
+      setError("An error occurred while completing the purchase.");
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading) {
-    return <p>Loading order details...</p>;
-  }
+  const renderPaymentForm = () => {
+    if (payment === "Card") {
+      return (
+        <div className="mt-3">
+          <div className="form-group">
+            <label htmlFor="cardNumber">Card Number:</label>
+            <input
+              type="text"
+              id="cardNumber"
+              className="form-control"
+              value={paymentDetails.cardNumber}
+              onChange={(e) =>
+                setPaymentDetails({ ...paymentDetails, cardNumber: e.target.value })
+              }
+              placeholder="Enter card number"
+              required
+            />
+          </div>
+          <div className="form-group mt-2">
+            <label htmlFor="cardName">Name on Card:</label>
+            <input
+              type="text"
+              id="cardName"
+              className="form-control"
+              value={paymentDetails.cardName}
+              onChange={(e) =>
+                setPaymentDetails({ ...paymentDetails, cardName: e.target.value })
+              }
+              placeholder="Enter name on card"
+              required
+            />
+          </div>
+          <div className="form-row mt-2">
+            <div className="form-group col-md-6">
+              <label htmlFor="expiryDate">Expiry Date:</label>
+              <input
+                type="text"
+                id="expiryDate"
+                className="form-control"
+                value={paymentDetails.expiryDate}
+                onChange={(e) =>
+                  setPaymentDetails({ ...paymentDetails, expiryDate: e.target.value })
+                }
+                placeholder="MM/YY"
+                required
+              />
+            </div>
+            <div className="form-group col-md-6">
+              <label htmlFor="cvv">CVV:</label>
+              <input
+                type="text"
+                id="cvv"
+                className="form-control"
+                value={paymentDetails.cvv}
+                onChange={(e) =>
+                  setPaymentDetails({ ...paymentDetails, cvv: e.target.value })
+                }
+                placeholder="CVV"
+                required
+              />
+            </div>
+          </div>
+        </div>
+      );
+    }
 
-  if (!order) {
-    return <p>No order details found.</p>;
-  }
+    if (payment === "PayPal") {
+      return (
+        <div className="mt-3">
+          <div className="form-group">
+            <label htmlFor="paypalEmail">PayPal Email:</label>
+            <input
+              type="email"
+              id="paypalEmail"
+              className="form-control"
+              value={paymentDetails.paypalEmail}
+              onChange={(e) =>
+                setPaymentDetails({ ...paymentDetails, paypalEmail: e.target.value })
+              }
+              placeholder="Enter PayPal email"
+              required
+            />
+          </div>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
+  if (loading) return <p>Loading...</p>;
+  if (!order) return <p>No order details found.</p>;
 
   return (
-    <div className="purchase-container">
-      <h1>Purchase Shoe</h1>
+    <div className="purchase-container mt-5">
+      <h2 className="text-center mb-4">Purchase Shoe</h2>
       <div className="order-details">
-        <h3>Order Summary</h3>
-        {order.items?.length > 0 ? (
-          order.items.map((item) => (
+        {order.items?.map((item) => {
+          const shoe = shoeDetails[item.Shoe];
+          const imageUrl = shoe?.image_url
+            ? `http://127.0.0.1:8000${shoe.image_url}`
+            : "http://127.0.0.1:8000/media/default_image.jpg";
+
+          return (
             <div key={item.id} className="order-item">
-              <p>Shoe: {item.Shoe?.name || "Unknown"}</p>
-              <p>Brand: {item.Shoe?.BrandID || "Unknown"}</p>
-              <p>Style: {item.Shoe?.StyleID || "Unknown"}</p>
-              <p>Quantity: {item.quantity}</p>
-              <p>Price: ${item.price}</p>
+              <img
+                src={imageUrl}
+                alt={shoe?.name || "No Name"}
+                className="img-thumbnail"
+              />
+              <p>{shoe?.name}</p>
             </div>
-          ))
-        ) : (
-          <p>No items in this order.</p>
-        )}
-        <h3>Total: ${order.total_price || 0}</h3>
+          );
+        })}
       </div>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
@@ -121,26 +230,20 @@ const PurchaseShoe = () => {
           <input
             type="text"
             id="shippingAddress"
+            className="form-control"
             value={shippingAddress}
-            onChange={(e) => {
-              setShippingAddress(e.target.value);
-              setError(""); // Clear error on change
-            }}
+            onChange={(e) => setShippingAddress(e.target.value)}
             placeholder="Enter your shipping address"
             required
           />
         </div>
-        <div className="form-group">
+        <div className="form-group mt-3">
           <label htmlFor="payment_method">Payment Method:</label>
           <select
-            className="form-control"
             id="payment_method"
-            name="payment_method"
+            className="form-control"
             value={payment || ""}
-            onChange={(e) => {
-              setPayment(e.target.value);
-              setError(""); // Clear error on change
-            }}
+            onChange={(e) => setPayment(e.target.value)}
             required
           >
             <option value="" disabled>
@@ -151,11 +254,12 @@ const PurchaseShoe = () => {
             <option value="Cash">Cash</option>
           </select>
         </div>
-        <button type="submit" disabled={loading}>
-          {loading ? "Processing..." : "Complete Purchase"}
+        {renderPaymentForm()}
+        <button type="submit" className="btn btn-success mt-4">
+          Complete Purchase
         </button>
       </form>
-      {error && <p className="error-message">{error}</p>}
+      {error && <p className="text-danger text-center mt-3">{error}</p>}
     </div>
   );
 };
