@@ -120,7 +120,12 @@ export const Navigation = () => {
               </a>
             </li>
 
-            {/* New Cart Link with only Bootstrap Shopping Cart Icon */}
+            
+
+            {/* If user is logged in -> Show username & logout. Otherwise -> Show LOGIN / REGISTER. */}
+            {user ? (
+              <>
+              {/* New Cart Link with only Bootstrap Shopping Cart Icon */}
             <li>
               <Link
                 to="/cart"
@@ -145,10 +150,6 @@ export const Navigation = () => {
                 ></i>
               </Link>
             </li>
-
-            {/* If user is logged in -> Show username & logout. Otherwise -> Show LOGIN / REGISTER. */}
-            {user ? (
-              <>
                 <li>
                   <a
                     className="page-scroll"
@@ -172,6 +173,7 @@ export const Navigation = () => {
                     </Link>
                   </a>
                 </li>
+                
                 <div style={{ display: "flex", gap: "10px", marginLeft: "20px" }}>
                   <button
                     onClick={handleLogout}

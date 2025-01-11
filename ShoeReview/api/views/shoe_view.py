@@ -59,12 +59,14 @@ class ShoeDetailView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, pk):
-        shoe = get_object_or_404(Shoe, pk=pk)
-        serializer = ShoeSerializer(shoe, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response({'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+         shoe = get_object_or_404(Shoe, pk=pk)
+         serializer = ShoeSerializer(shoe, data=request.data, partial=True)  # Allow partial updates
+         if serializer.is_valid():
+             serializer.save()
+             return Response(serializer.data, status=status.HTTP_200_OK)
+         return Response({'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+
 
     def delete(self, request, pk):
         shoe = get_object_or_404(Shoe, pk=pk)

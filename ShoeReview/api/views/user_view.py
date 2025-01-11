@@ -129,6 +129,7 @@ def get_current_user(request):
     """
     user = request.user
     data = {
+        "id": user.id,
         "username": user.username,
         "email": user.email,
         "is_staff": user.is_staff,

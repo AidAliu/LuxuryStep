@@ -6,7 +6,7 @@ import { FaStar } from "react-icons/fa";
 const ReviewShoe = () => {
   const { ShoeID } = useParams();
   const navigate = useNavigate();
-
+  const [user, setUser] = useState(null);
   const [shoe, setShoe] = useState(null); // Shoe details
   const [rating, setRating] = useState(0); // Numeric rating
   const [hover, setHover] = useState(null); // For star hover
@@ -15,6 +15,25 @@ const ReviewShoe = () => {
   const [error, setError] = useState(null); // Error messages
 
   const isLoggedIn = localStorage.getItem("accessToken");
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) return;
+
+    axios
+      .get("http://127.0.0.1:8000/api/me/", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        console.log("API Response for Logged-in User:", res.data);
+        setUser(res.data);
+        
+      })
+      .catch((err) => {
+        console.error("Error fetching user info:", err);
+      });
+  }, []);
+
 
   useEffect(() => {
     const fetchShoeData = async () => {
@@ -96,6 +115,25 @@ const ReviewShoe = () => {
   const calculateRoundedStars = () => {
     const average = calculateAverageRating();
     return Math.round(average); // Round for star display
+  };
+
+  const deleteReview = async (reviewID) => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      await axios.delete(`http://127.0.0.1:8000/api/reviews/${reviewID}/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      // Remove the review from state
+      setReviews((prevReviews) =>
+        prevReviews.filter((review) => review.ReviewID !== reviewID)
+      );
+
+      alert("Review deleted successfully!");
+    } catch (err) {
+      console.error("Error deleting review:", err);
+      setError("Failed to delete the review. Please try again.");
+    }
   };
 
   return (
@@ -180,23 +218,35 @@ const ReviewShoe = () => {
           <p>No reviews yet. Be the first to leave a review!</p>
         ) : (
           <ul className="list-group">
-            {reviews.map((review) => (
-              <li key={review.id} className="list-group-item">
-                <div>
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <FaStar
-                      key={star}
-                      size={20}
-                      color={star <= review.rating ? "#ffc107" : "#e4e5e9"}
-                    />
-                  ))}
-                </div>
-                <strong>Comment:</strong> {review.comment}
-                <br />
-                <strong>By:</strong> {review.User.username}
-              </li>
-            ))}
-          </ul>
+  {reviews.map((review) => (
+    <li key={review.ReviewID} className="list-group-item" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div>
+        <div>
+          {[1, 2, 3, 4, 5].map((star) => (
+            <FaStar
+              key={star}
+              size={20}
+              color={star <= review.rating ? "#ffc107" : "#e4e5e9"}
+            />
+          ))}
+        </div>
+        <strong>Comment:</strong> {review.comment}
+        <br />
+        <strong>By:</strong> {review.User.username}
+      </div>
+      {user?.id === review.User.id && (
+        <button
+          className="btn btn-danger btn-sm"
+          onClick={() => deleteReview(review.ReviewID)}
+        >
+          Delete
+        </button>
+      )}
+    </li>
+  ))}
+</ul>
+
+
         )}
         <div className="text-center mt-4">
           <button className="btn btn-link" onClick={() => navigate("/")}>

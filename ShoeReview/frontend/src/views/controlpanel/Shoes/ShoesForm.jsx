@@ -56,8 +56,8 @@ const ShoesForm = () => {
           const shoe = response.data;
           setShoeData({
             name: shoe.name || "",
-            BrandID: shoe.BrandID.id || "", // Ensure the correct structure
-            StyleID: shoe.StyleID.id || "",
+            BrandID: shoe.BrandID || "", // Ensure the correct structure
+            StyleID: shoe.StyleID || "",
             price: shoe.price || "",
             size: shoe.size || "",
             stock: shoe.stock || "",
@@ -95,16 +95,19 @@ const ShoesForm = () => {
 
     const formData = new FormData();
     formData.append("name", shoeData.name);
-    formData.append("BrandID", parseInt(shoeData.BrandID)); // Ensure integer IDs
-    formData.append("StyleID", parseInt(shoeData.StyleID)); // Ensure integer IDs
+    formData.append("BrandID", parseInt(shoeData.BrandID, 10)); // Parse as integer
+    formData.append("StyleID", parseInt(shoeData.StyleID, 10)); // Parse as integer
     formData.append("price", shoeData.price);
     formData.append("size", shoeData.size);
     formData.append("stock", shoeData.stock);
     formData.append("description", shoeData.description);
 
     if (imageFile) {
-      formData.append("image_url", imageFile); // Attach the image file
+      formData.append("image_url", imageFile);
+    } else if (ShoeID && shoeData.image_url) {
+      formData.append("image_url", shoeData.image_url);
     }
+    
 
     try {
       setLoading(true);
@@ -149,8 +152,18 @@ const ShoesForm = () => {
   }
 
   if (error) {
-    return <div>{error}</div>;
+    return (
+      <div className="alert alert-danger">
+        {Object.entries(error).map(([field, messages]) => (
+          <div key={field}>
+            <strong>{field}:</strong>{" "}
+            {Array.isArray(messages) ? messages.join(", ") : messages}
+          </div>
+        ))}
+      </div>
+    );
   }
+  
 
   return (
     <div className="container">
@@ -182,7 +195,7 @@ const ShoesForm = () => {
               Select a brand
             </option>
             {brands.map((brand) => (
-              <option key={brand.id} value={brand.id}>
+              <option key={brand.BrandID} value={brand.BrandID}>
                 {brand.name}
               </option>
             ))}
@@ -202,7 +215,7 @@ const ShoesForm = () => {
               Select a style
             </option>
             {styles.map((style) => (
-              <option key={style.id} value={style.id}>
+              <option key={style.StyleID} value={style.StyleID}>
                 {style.name}
               </option>
             ))}

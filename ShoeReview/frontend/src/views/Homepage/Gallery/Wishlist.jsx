@@ -144,7 +144,13 @@ const Wishlist = () => {
           <div className="alert alert-info">Your wishlist is empty.</div>
         </div>
       )}
+      <div className="text-center mt-4">
+          <button className="btn btn-link" onClick={() => navigate("/")}>
+            Return to Homepage
+          </button>
+        </div>
     </div>
+    
   );
 };
 

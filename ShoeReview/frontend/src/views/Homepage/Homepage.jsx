@@ -67,12 +67,17 @@ const Homepage = () => {
         navigate("/"); // Navigate to home or relevant page
       } else {
         setError("No wishlist found for the user.");
+        navigate("/")
       }
     } catch (err) {
       console.error("Error adding to wishlist:", err);
+      navigate("/")
       setError("Failed to add to wishlist. Please try again later.");
+      alert("This Shoe is Already in your Wishlist.");
     } finally {
       setLoading(false);
+      navigate("/");
+      
     }
   };
 

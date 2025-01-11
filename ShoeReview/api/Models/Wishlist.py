@@ -11,6 +11,8 @@ class Wishlist(models.Model):
     User = models.OneToOneField(User, on_delete=models.CASCADE, related_name='wishlist')
     name = models.CharField(max_length=100)
 
+
+    
     def __str__(self):
         return f"Wishlist: {self.name} (User: {self.User.username})"
 
@@ -21,6 +23,9 @@ class WishlistItem(models.Model):
     """
     Wishlist = models.ForeignKey(Wishlist, on_delete=models.CASCADE, related_name='items')  # Reference Wishlist
     Shoe = models.ForeignKey(Shoe, on_delete=models.CASCADE, related_name='wishlist_items')  # Reference Shoe
+
+    class Meta:
+        unique_together = ('Wishlist', 'Shoe')
 
     def __str__(self):
         return f"WishlistItem: {self.Wishlist.name} - Shoe: {self.Shoe.name}"

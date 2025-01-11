@@ -133,6 +133,11 @@ const Cart = () => {
           </button>
         </div>
       )}
+      <div className="text-center mt-4">
+          <button className="btn btn-link" onClick={() => navigate("/")}>
+            Return to Homepage
+          </button>
+        </div>
     </div>
   );
 };
