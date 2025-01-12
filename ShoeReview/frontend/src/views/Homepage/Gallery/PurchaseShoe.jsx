@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 const PurchaseShoe = () => {
   const { OrderID } = useParams();
   const navigate = useNavigate();
-  const [payment, setPayment] = useState();
+  const [payment, setPayment] = useState("");
   const [order, setOrder] = useState(null);
   const [shoeDetails, setShoeDetails] = useState({});
   const [shippingAddress, setShippingAddress] = useState("");
@@ -112,9 +112,9 @@ const PurchaseShoe = () => {
   const renderPaymentForm = () => {
     if (payment === "Card") {
       return (
-        <div className="mt-3">
+        <div className="card-container">
           <div className="form-group">
-            <label htmlFor="cardNumber">Card Number:</label>
+            <label htmlFor="cardNumber">Card Number</label>
             <input
               type="text"
               id="cardNumber"
@@ -127,8 +127,8 @@ const PurchaseShoe = () => {
               required
             />
           </div>
-          <div className="form-group mt-2">
-            <label htmlFor="cardName">Name on Card:</label>
+          <div className="form-group mt-3">
+            <label htmlFor="cardName">Cardholder Name</label>
             <input
               type="text"
               id="cardName"
@@ -141,9 +141,9 @@ const PurchaseShoe = () => {
               required
             />
           </div>
-          <div className="form-row mt-2">
-            <div className="form-group col-md-6">
-              <label htmlFor="expiryDate">Expiry Date:</label>
+          <div className="row mt-3">
+            <div className="col-md-6 form-group">
+              <label htmlFor="expiryDate">Expiry Date</label>
               <input
                 type="text"
                 id="expiryDate"
@@ -156,8 +156,8 @@ const PurchaseShoe = () => {
                 required
               />
             </div>
-            <div className="form-group col-md-6">
-              <label htmlFor="cvv">CVV:</label>
+            <div className="col-md-6 form-group">
+              <label htmlFor="cvv">CVV</label>
               <input
                 type="text"
                 id="cvv"
@@ -177,9 +177,9 @@ const PurchaseShoe = () => {
 
     if (payment === "PayPal") {
       return (
-        <div className="mt-3">
+        <div className="card-container">
           <div className="form-group">
-            <label htmlFor="paypalEmail">PayPal Email:</label>
+            <label htmlFor="paypalEmail">PayPal Email</label>
             <input
               type="email"
               id="paypalEmail"
@@ -203,65 +203,53 @@ const PurchaseShoe = () => {
   if (!order) return <p>No order details found.</p>;
 
   return (
-    <div className="purchase-container mt-5">
-      <h2 className="text-center mb-4">Purchase Shoe</h2>
+    <div className="purchase-container">
+      <h2>Purchase Shoe</h2>
       <div className="order-details">
-        {order.items?.map((item) => {
-          const shoe = shoeDetails[item.Shoe];
-          const imageUrl = shoe?.image_url
-            ? `http://127.0.0.1:8000${shoe.image_url}`
-            : "http://127.0.0.1:8000/media/default_image.jpg";
-
-          return (
-            <div key={item.id} className="order-item">
-              <img
-                src={imageUrl}
-                alt={shoe?.name || "No Name"}
-                className="img-thumbnail"
-              />
-              <p>{shoe?.name}</p>
-            </div>
-          );
-        })}
+        {order.items.map((item) => (
+          <div key={item.Shoe} className="order-item">
+            <img src={`http://127.0.0.1:8000${shoeDetails[item.Shoe]?.image_url}`} alt="" />
+            <p>{shoeDetails[item.Shoe]?.name}</p>
+            <p>Qty: {item.quantity}</p>
+          </div>
+        ))}
       </div>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label htmlFor="shippingAddress">Shipping Address:</label>
+          <label htmlFor="shippingAddress">Shipping Address</label>
           <input
-            type="text"
-            id="shippingAddress"
-            className="form-control"
-            value={shippingAddress}
-            onChange={(e) => setShippingAddress(e.target.value)}
-            placeholder="Enter your shipping address"
-            required
-          />
-        </div>
-        <div className="form-group mt-3">
-          <label htmlFor="payment_method">Payment Method:</label>
-          <select
-            id="payment_method"
-            className="form-control"
-            value={payment || ""}
-            onChange={(e) => setPayment(e.target.value)}
-            required
-          >
-            <option value="" disabled>
-              Select Payment Method
-            </option>
-            <option value="Card">Card</option>
-            <option value="PayPal">PayPal</option>
-            <option value="Cash">Cash</option>
-          </select>
-        </div>
-        {renderPaymentForm()}
-        <button type="submit" className="btn btn-success mt-4">
-          Complete Purchase
-        </button>
-      </form>
-      {error && <p className="text-danger text-center mt-3">{error}</p>}
-    </div>
-  );
-};
-
-export default PurchaseShoe;
+                       type="text"
+                       id="shippingAddress"
+                       className="form-control"
+                       value={shippingAddress}
+                       onChange={(e) => setShippingAddress(e.target.value)}
+                       placeholder="Enter your shipping address"
+                       required
+                     />
+                   </div>
+                   <div className="form-group mt-4">
+                     <label htmlFor="payment">Payment Method</label>
+                     <select
+                       id="payment"
+                       className="form-control"
+                       value={payment}
+                       onChange={(e) => setPayment(e.target.value)}
+                       required
+                     >
+                       <option value="">Select Payment Method</option>
+                       <option value="Card">Card</option>
+                       <option value="PayPal">PayPal</option>
+                     </select>
+                   </div>
+                   {renderPaymentForm()}
+                   {error && <div className="error-message mt-3">{error}</div>}
+                   <button type="submit" className="btn btn-primary mt-4 w-100" disabled={loading}>
+                     {loading ? "Processing..." : "Complete Purchase"}
+                   </button>
+                 </form>
+               </div>
+             );
+           };
+           
+           export default PurchaseShoe;
+           

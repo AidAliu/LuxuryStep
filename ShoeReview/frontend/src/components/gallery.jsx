@@ -107,67 +107,73 @@ const Gallery = () => {
           <h2>Shoe Gallery</h2>
           <p>Explore our collection of shoes below.</p>
         </div>
-        <div className="row">
-          <div className="gallery-items d-flex flex-wrap justify-content-center">
-            {shoes.map((shoe) => (
-              <div
-                className="col-12 col-sm-6 col-md-4 col-lg-3 p-2"
-                key={shoe.ShoeID}
-              >
-                <div className="shoe-card">
-                  <div className="shoe-image">
-                    <img
-                      src={shoe.image_url.startsWith("/media/") ? `http://127.0.0.1:8000${shoe.image_url}` : `http://127.0.0.1:8000/media/${shoe.image_url}`}
-                      alt={shoe.name}
-                      onError={(e) => {
-                        e.target.src = "https://via.placeholder.com/200";
-                      }}
-                    />
-                    <div className="overlay">
-                      <button
-                        className="btn btn-success"
-                        onClick={() => handleWishlist(shoe.ShoeID)}
-                      >
-                        Add to Wishlist
-                      </button>
-                      <button
-                        className="btn btn-secondary mx-2"
-                        onClick={() => handleReview(shoe.ShoeID)}
-                      >
-                        Add a Review
-                      </button>
-                      <button
-                        className="btn btn-primary"
-                        onClick={() => handlePurchase(shoe.ShoeID)}
-                      >
-                        Add to Cart
-                      </button>
+        <div className="gallery-items">
+          {shoes.reduce((rows, shoe, index) => {
+            if (index % 4 === 0) rows.push([]);
+            rows[rows.length - 1].push(shoe);
+            return rows;
+          }, []).map((row, rowIndex) => (
+            <div className="row" key={rowIndex}>
+              {row.map((shoe) => (
+                <div
+                  className="col-12 col-sm-6 col-md-4 col-lg-3 p-2"
+                  key={shoe.ShoeID}
+                >
+                  <div className="shoe-card">
+                    <div className="shoe-image">
+                      <img
+                        src={shoe.image_url.startsWith("/media/")
+                          ? `http://127.0.0.1:8000${shoe.image_url}`
+                          : `http://127.0.0.1:8000/media/${shoe.image_url}`}
+                        alt={shoe.name}
+                        onError={(e) => {
+                          e.target.src = "https://via.placeholder.com/200";
+                        }}
+                      />
+                      <div className="overlay">
+                        <button
+                          className="btn btn-success"
+                          onClick={() => handleWishlist(shoe.ShoeID)}
+                        >
+                          Add to Wishlist
+                        </button>
+                        <button
+                          className="btn btn-secondary mx-2"
+                          onClick={() => handleReview(shoe.ShoeID)}
+                        >
+                          Add a Review
+                        </button>
+                        <button
+                          className="btn btn-primary"
+                          onClick={() => handlePurchase(shoe.ShoeID)}
+                        >
+                          Add to Cart
+                        </button>
+                      </div>
+                    </div>
+                    <h4>{shoe.name}</h4>
+                    <p>{shoe.description}</p>
+                    <p><strong>Price: ${shoe.price}</strong></p>
+                    <div className="average-rating">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <FaStar
+                          key={star}
+                          size={20}
+                          color={star <= Math.round(ratings[shoe.ShoeID] || 0) ? "#ffc107" : "#e4e5e9"}
+                        />
+                      ))}
+                      <p>{ratings[shoe.ShoeID] || 0} out of 5</p>
                     </div>
                   </div>
-                  <h4>{shoe.name}</h4>
-                  <p>{shoe.description}</p>
-                  <p><strong>Price: ${shoe.price}</strong></p>
-                  {/* Average Rating Section */}
-                  <div className="average-rating">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <FaStar
-                        key={star}
-                        size={20}
-                        color={star <= Math.round(ratings[shoe.ShoeID] || 0) ? "#ffc107" : "#e4e5e9"}
-                      />
-                    ))}
-                    <p>
-                      {ratings[shoe.ShoeID] || 0} out of 5
-                    </p>
-                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ))}
         </div>
       </div>
     </div>
   );
+  
 };
 
 export default Gallery;
