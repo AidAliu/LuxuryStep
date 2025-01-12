@@ -239,6 +239,7 @@ const PurchaseShoe = () => {
                        <option value="">Select Payment Method</option>
                        <option value="Card">Card</option>
                        <option value="PayPal">PayPal</option>
+                       <option value="Cash">Cash</option>
                      </select>
                    </div>
                    {renderPaymentForm()}
