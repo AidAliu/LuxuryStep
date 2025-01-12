@@ -1,22 +1,60 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { FaStar } from "react-icons/fa";
 import "./css/gallery.css";
 
-export const Gallery = () => {
+const Gallery = () => {
   const [shoes, setShoes] = useState([]);
+  const [ratings, setRatings] = useState({});
   const navigate = useNavigate();
 
   // Check if the user is logged in
   const isLoggedIn = localStorage.getItem("accessToken");
 
-  // Fetch shoes from the backend API
+  // Fetch shoes and their average ratings
   useEffect(() => {
-    axios
-      .get("http://127.0.0.1:8000/api/shoes/")
-      .then((response) => setShoes(response.data))
-      .catch((error) => console.error("Error fetching shoes:", error));
+    const fetchShoes = async () => {
+      try {
+        const shoesResponse = await axios.get("http://127.0.0.1:8000/api/shoes/");
+        setShoes(shoesResponse.data);
+
+        // Fetch average ratings for each shoe
+        const ratingPromises = shoesResponse.data.map((shoe) =>
+          axios
+            .get(`http://127.0.0.1:8000/api/shoes/${shoe.ShoeID}/reviews/`)
+            .then((res) => ({
+              shoeID: shoe.ShoeID,
+              averageRating: calculateAverageRating(res.data),
+            }))
+        );
+
+        const ratingsData = await Promise.all(ratingPromises);
+        const ratingsMap = ratingsData.reduce(
+          (map, rating) => ({
+            ...map,
+            [rating.shoeID]: rating.averageRating,
+          }),
+          {}
+        );
+        setRatings(ratingsMap);
+      } catch (error) {
+        console.error("Error fetching shoes or ratings:", error);
+      }
+    };
+
+    fetchShoes();
   }, []);
+
+
+  const calculateAverageRating = (reviews) => {
+    if (reviews.length === 0) return 0;
+
+    const validReviews = reviews.filter((review) => review.rating >= 1 && review.rating <= 5);
+    const totalRating = validReviews.reduce((sum, review) => sum + review.rating, 0);
+
+    return validReviews.length > 0 ? (totalRating / validReviews.length).toFixed(1) : 0;
+  };
 
   const handlePurchase = async (ShoeID) => {
     if (!isLoggedIn) {
@@ -109,6 +147,19 @@ export const Gallery = () => {
                   <h4>{shoe.name}</h4>
                   <p>{shoe.description}</p>
                   <p><strong>Price: ${shoe.price}</strong></p>
+                  {/* Average Rating Section */}
+                  <div className="average-rating">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <FaStar
+                        key={star}
+                        size={20}
+                        color={star <= Math.round(ratings[shoe.ShoeID] || 0) ? "#ffc107" : "#e4e5e9"}
+                      />
+                    ))}
+                    <p>
+                      {ratings[shoe.ShoeID] || 0} out of 5
+                    </p>
+                  </div>
                 </div>
               </div>
             ))}
