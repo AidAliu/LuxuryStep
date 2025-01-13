@@ -1,46 +1,57 @@
+# file: style_view.py
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+
+from django.shortcuts import get_object_or_404
 from ..models import Style
 from ..serializers import StyleSerializer
+from ..design_patterns.singleton_services import StyleManagerSingleton
 
 class StyleListCreateView(APIView):
     def get(self, request):
         styles = Style.objects.all()
         serializer = StyleSerializer(styles, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
-        serializer = StyleSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
+        data = request.data
+        manager = StyleManagerSingleton()
+
+        try:
+            new_style = manager.create_style(
+                name=data.get('name', ''),
+                description=data.get('description', '')
+            )
+            serializer = StyleSerializer(new_style)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class StyleDetailView(APIView):
     def get(self, request, pk):
-        try:
-            style = Style.objects.get(pk=pk)
-            serializer = StyleSerializer(style)
-            return Response(serializer.data)
-        except Style.DoesNotExist:
+        manager = StyleManagerSingleton()
+        style_obj = manager.get_style_by_id(pk)
+        if not style_obj:
             return Response({'error': 'Style not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = StyleSerializer(style_obj)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, pk):
-        try:
-            style = Style.objects.get(pk=pk)
-            serializer = StyleSerializer(style, data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except Style.DoesNotExist:
+        manager = StyleManagerSingleton()
+        updated_style = manager.update_style(pk, request.data)
+        if not updated_style:
             return Response({'error': 'Style not found'}, status=status.HTTP_404_NOT_FOUND)
 
+        serializer = StyleSerializer(updated_style)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     def delete(self, request, pk):
-        try:
-            style = Style.objects.get(pk=pk)
-            style.delete()
+        manager = StyleManagerSingleton()
+        success = manager.delete_style(pk)
+        if success:
             return Response(status=status.HTTP_204_NO_CONTENT)
-        except Style.DoesNotExist:
-            return Response({'error': 'Style not found'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'error': 'Style not found'}, status=status.HTTP_404_NOT_FOUND)
