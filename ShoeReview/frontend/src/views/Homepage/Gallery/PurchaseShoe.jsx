@@ -80,6 +80,12 @@ const PurchaseShoe = () => {
     setLoading(true);
 
     try {
+      await axios.put(
+        `http://127.0.0.1:8000/api/orders/${OrderID}/`,
+        { shipping_address: shippingAddress },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
       const paymentData = {
         payment_method: payment,
         amount: order.total_price,
@@ -87,13 +93,7 @@ const PurchaseShoe = () => {
         shipping_address: shippingAddress,
       };
 
-      await axios.put(
-        `http://127.0.0.1:8000/api/orders/${OrderID}/`,
-        { shipping_address: shippingAddress },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      const response = await axios.post(
+      await axios.post(
         `http://127.0.0.1:8000/api/paymentsapi/`,
         paymentData,
         { headers: { Authorization: `Bearer ${token}` } }
@@ -208,7 +208,10 @@ const PurchaseShoe = () => {
       <div className="order-details">
         {order.items.map((item) => (
           <div key={item.Shoe} className="order-item">
-            <img src={`http://127.0.0.1:8000${shoeDetails[item.Shoe]?.image_url}`} alt="" />
+            <img
+              src={`http://127.0.0.1:8000${shoeDetails[item.Shoe]?.image_url}`}
+              alt={shoeDetails[item.Shoe]?.name}
+            />
             <p>{shoeDetails[item.Shoe]?.name}</p>
             <p>Qty: {item.quantity}</p>
           </div>
@@ -218,39 +221,42 @@ const PurchaseShoe = () => {
         <div className="form-group">
           <label htmlFor="shippingAddress">Shipping Address</label>
           <input
-                       type="text"
-                       id="shippingAddress"
-                       className="form-control"
-                       value={shippingAddress}
-                       onChange={(e) => setShippingAddress(e.target.value)}
-                       placeholder="Enter your shipping address"
-                       required
-                     />
-                   </div>
-                   <div className="form-group mt-4">
-                     <label htmlFor="payment">Payment Method</label>
-                     <select
-                       id="payment"
-                       className="form-control"
-                       value={payment}
-                       onChange={(e) => setPayment(e.target.value)}
-                       required
-                     >
-                       <option value="">Select Payment Method</option>
-                       <option value="Card">Card</option>
-                       <option value="PayPal">PayPal</option>
-                       <option value="Cash">Cash</option>
-                     </select>
-                   </div>
-                   {renderPaymentForm()}
-                   {error && <div className="error-message mt-3">{error}</div>}
-                   <button type="submit" className="btn btn-primary mt-4 w-100" disabled={loading}>
-                     {loading ? "Processing..." : "Complete Purchase"}
-                   </button>
-                 </form>
-               </div>
-             );
-           };
-           
-           export default PurchaseShoe;
-           
+            type="text"
+            id="shippingAddress"
+            className="form-control"
+            value={shippingAddress}
+            onChange={(e) => setShippingAddress(e.target.value)}
+            placeholder="Enter your shipping address"
+            required
+          />
+        </div>
+        <div className="form-group mt-4">
+          <label htmlFor="payment">Payment Method</label>
+          <select
+            id="payment"
+            className="form-control"
+            value={payment}
+            onChange={(e) => setPayment(e.target.value)}
+            required
+          >
+            <option value="">Select Payment Method</option>
+            <option value="Card">Card</option>
+            <option value="PayPal">PayPal</option>
+            <option value="Cash">Cash</option>
+          </select>
+        </div>
+        {renderPaymentForm()}
+        {error && <div className="error-message mt-3">{error}</div>}
+        <button
+          type="submit"
+          className="btn btn-primary mt-4 w-100"
+          disabled={loading}
+        >
+          {loading ? "Processing..." : "Complete Purchase"}
+        </button>
+      </form>
+    </div>
+  );
+};
+
+export default PurchaseShoe;

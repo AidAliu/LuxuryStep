@@ -155,15 +155,22 @@ const Gallery = () => {
                     <p>{shoe.description}</p>
                     <p><strong>Price: ${shoe.price}</strong></p>
                     <div className="average-rating">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <FaStar
-                          key={star}
-                          size={20}
-                          color={star <= Math.round(ratings[shoe.ShoeID] || 0) ? "#ffc107" : "#e4e5e9"}
-                        />
-                      ))}
-                      <p>{ratings[shoe.ShoeID] || 0} out of 5</p>
-                    </div>
+                  {ratings[shoe.ShoeID] ? (
+                     <>
+                  {[1, 2, 3, 4, 5].map((star) => (
+        <FaStar
+          key={star}
+          size={20}
+          color={star <= Math.round(ratings[shoe.ShoeID]) ? "#ffc107" : "#e4e5e9"}
+        />
+      ))}
+      <p>{ratings[shoe.ShoeID]} out of 5</p>
+    </>
+  ) : (
+    <p>No Reviews</p>
+  )}
+</div>
+
                   </div>
                 </div>
               ))}
