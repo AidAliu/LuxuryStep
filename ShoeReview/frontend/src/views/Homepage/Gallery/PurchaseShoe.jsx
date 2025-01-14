@@ -198,22 +198,73 @@ const PurchaseShoe = () => {
 
     return null;
   };
+  
+  const styles = {
+    purchaseContainer: {
+      maxWidth: '800px',
+      margin: '30px auto',
+      padding: '20px',
+      backgroundColor: '#ffffff',
+      borderRadius: '10px',
+      boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
+    },
+    heading: {
+      textAlign: 'center',
+      fontSize: '2rem',
+      fontWeight: 'bold',
+      marginBottom: '25px',
+      color: '#343a40',
+    },
+    orderDetails: {
+      display: 'flex',
+      flexWrap: 'wrap',
+      gap: '15px',
+      justifyContent: 'space-around',
+      marginBottom: '20px',
+    },
+    orderItem: {
+      width: '100px',
+      textAlign: 'center',
+      marginBottom: '10px',
+    },
+    orderItemImg: {
+      width: '150px',
+      height: '150px',
+      objectFit: 'cover',
+      borderRadius: '8px',
+      marginBottom: '5px',
+    },
+    orderItemText: {
+      fontSize: '0.9rem',
+      fontWeight: '500',
+      color: '#495057',
+    },
+    button: {
+      backgroundColor: '#007bff',
+      color: 'white',
+      fontWeight: 'bold',
+    },
+    buttonHover: {
+      backgroundColor: '#0056b3',
+    },
+  };
 
   if (loading) return <p>Loading...</p>;
   if (!order) return <p>No order details found.</p>;
 
   return (
-    <div className="purchase-container">
-      <h2>Purchase Shoe</h2>
-      <div className="order-details">
+    <div style={styles.purchaseContainer}>
+      <h2 style={styles.heading}>Purchase Shoe</h2>
+      <div style={styles.orderDetails}>
         {order.items.map((item) => (
-          <div key={item.Shoe} className="order-item">
+          <div key={item.Shoe} style={styles.orderItem}>
             <img
               src={`http://127.0.0.1:8000${shoeDetails[item.Shoe]?.image_url}`}
               alt={shoeDetails[item.Shoe]?.name}
+              style={styles.orderItemImg}
             />
-            <p>{shoeDetails[item.Shoe]?.name}</p>
-            <p>Qty: {item.quantity}</p>
+            <p style={styles.orderItemText}>{shoeDetails[item.Shoe]?.name}</p>
+            <p style={styles.orderItemText}>Qty: {item.quantity}</p>
           </div>
         ))}
       </div>
