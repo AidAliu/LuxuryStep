@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const BrandForm = () => {
-  const { BrandID } = useParams(); // Get the ID from the URL (if any)
+  const { BrandID } = useParams(); 
   const navigate = useNavigate();
 
   const [brandData, setBrandData] = useState({
