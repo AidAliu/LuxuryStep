@@ -44,7 +44,7 @@ export const Navigation = () => {
       style={{
         minHeight: "50px",
         marginLeft: "0px",
-        marginRight: "0px", 
+        marginRight: "0px",
       }}
     >
       <div
@@ -56,9 +56,9 @@ export const Navigation = () => {
           padding: "0 0px",
         }}
       >
-        <a
+        <Link
           className="navbar-brand page-scroll"
-          href="#page-top"
+          to="/"
           style={{
             margin: 0,
             padding: "14px 0",
@@ -67,7 +67,7 @@ export const Navigation = () => {
           }}
         >
           LuxuryStep
-        </a>
+        </Link>
 
         <div style={{ display: "flex", alignItems: "center" }}>
           <ul
@@ -120,61 +120,65 @@ export const Navigation = () => {
               </a>
             </li>
 
-            
-
             {/* If user is logged in -> Show username & logout. Otherwise -> Show LOGIN / REGISTER. */}
             {user ? (
               <>
-              {/* New Cart Link with only Bootstrap Shopping Cart Icon */}
-            <li>
-              <Link
-                to="/cart"
-                className="page-scroll"
-                style={{
-                  padding: "10px 15px",
-                  fontSize: "20px", // Larger font for cart icon
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                <i
-                  className="bi bi-cart-fill"
-                  onMouseEnter={() => setIsHovered(true)}  // Set hover state to true
-                  onMouseLeave={() => setIsHovered(false)}
-                  style={{
-                    fontSize: "24px",
-                    color: isHovered ? "orange" : "#333", // Heart turns white when hovered
-                    padding: "10px", // Add more padding for oval effect
-                    transition: "color 0.3s ease, background-color 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease", // Smooth transition
-                  }}
-                ></i>
-              </Link>
-            </li>
+                {/* New Cart Link with only Bootstrap Shopping Cart Icon */}
                 <li>
-                  <a
+                  <Link
+                    to="/cart"
                     className="page-scroll"
-                    style={{ padding: "10px 15px" }}
+                    style={{
+                      padding: "10px 15px",
+                      fontSize: "20px",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
                   >
-                    <Link
-                      style={{ color: "grey" }}
-                      to="/addtowishlist"
-                    >
-                      <i
-                        className="bi bi-heart"
-                        onMouseEnter={() => setIsHovered(true)}  // Set hover state to true
-                        onMouseLeave={() => setIsHovered(false)} // Set hover state to false
-                        style={{
-                          fontSize: "24px",
-                          color: isHovered ? "red" : "#333", // Heart turns white when hovered
-                          padding: "10px", // Add more padding for oval effect
-                          transition: "color 0.3s ease, background-color 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease", // Smooth transition
-                        }}
-                      ></i>
-                    </Link>
-                  </a>
+                    <i
+                      className="bi bi-cart-fill"
+                      aria-label="Shopping Cart"
+                      onMouseEnter={() => setIsHovered(true)}
+                      onMouseLeave={() => setIsHovered(false)}
+                      style={{
+                        fontSize: "24px",
+                        color: isHovered ? "orange" : "#333",
+                        padding: "10px",
+                        transition:
+                          "color 0.3s ease, background-color 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease",
+                      }}
+                    ></i>
+                  </Link>
                 </li>
-                
-                <div style={{ display: "flex", gap: "10px", marginLeft: "20px" }}>
+                <li>
+                  <Link
+                    to="/addtowishlist"
+                    className="page-scroll"
+                    style={{ padding: "10px 15px", color: "grey" }}
+                  >
+                    <i
+                      className="bi bi-heart"
+                      aria-label="Wishlist"
+                      onMouseEnter={() => setIsHovered(true)}
+                      onMouseLeave={() => setIsHovered(false)}
+                      style={{
+                        fontSize: "24px",
+                        color: isHovered ? "red" : "#333",
+                        padding: "10px",
+                        transition:
+                          "color 0.3s ease, background-color 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease",
+                      }}
+                    ></i>
+                  </Link>
+                </li>
+
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "10px",
+                    marginLeft: "20px",
+                  }}
+                >
                   <button
                     onClick={handleLogout}
                     style={{
@@ -196,7 +200,7 @@ export const Navigation = () => {
                   <li style={{ marginLeft: "15px" }}>
                     <button
                       onClick={() => navigate("/controlpanel")}
-                      className="btn btn-danger" // Bootstrap red button class
+                      className="btn btn-danger"
                       style={{
                         color: "#fff",
                         fontSize: "14px",
@@ -210,7 +214,13 @@ export const Navigation = () => {
                 )}
               </>
             ) : (
-              <div style={{ display: "flex", gap: "10px", marginLeft: "20px" }}>
+              <div
+                style={{
+                  display: "flex",
+                  gap: "10px",
+                  marginLeft: "20px",
+                }}
+              >
                 <Link
                   to="/login"
                   style={{
