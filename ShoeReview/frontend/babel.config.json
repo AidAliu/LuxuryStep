@@ -4,11 +4,14 @@
       "@babel/preset-env",
       {
         "targets": {
-          "node": "10"
+          "browsers": [">0.2%", "not dead", "not op_mini all"]
         }
       }
     ],
     "@babel/preset-react"
   ],
-  "plugins": ["@babel/plugin-proposal-class-properties"]
+  "plugins": [
+    "@babel/plugin-proposal-class-properties",
+    "@babel/plugin-proposal-private-property-in-object"
+  ]
 }

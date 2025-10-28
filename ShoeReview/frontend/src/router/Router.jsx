@@ -29,6 +29,7 @@ import ReviewShoe from "../views/Homepage/Gallery/ReviewShoe";
 import PurchaseShoe from "../views/Homepage/Gallery/PurchaseShoe";
 import Wishlist from "../views/Homepage/Gallery/Wishlist";
 import Cart from "../views/Homepage/Gallery/cart";
+import CheckoutPage from "../views/CheckoutPage";
 const AppRouter = () => {
   return (
     <Router>
@@ -43,6 +44,7 @@ const AppRouter = () => {
 
         {/* Control Panel */}
         <Route path="/controlpanel" element={<ControlPanel />} />
+        
         {/* Payments */}        
         <Route path="/payments" element={<PaymentsPage />} />
         <Route path="/payments/new" element={<PaymentsForm />} />
@@ -101,6 +103,9 @@ const AppRouter = () => {
 
         {/*Orders and Cart*/}
         <Route path="/cart" element={<Cart />} />
+        
+        {/* Stripe Checkout */}
+        <Route path="/checkout/:orderId" element={<CheckoutPage />} />
       </Routes>
     </Router>
   );
